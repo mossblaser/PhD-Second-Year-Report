@@ -1,0 +1,158 @@
+\chapter{Background}
+	
+	\section{Simulating brains}
+		
+		% What is done, for what purpose
+		
+		\subsection{History of artificial neural networks}
+			
+			% Three generations and their differing aims.
+		
+		\subsection{Computation}
+			
+			% Number of neurons and synapses, amount of state, differential equation
+			% model, discrete time, typically 0.1-1.0 ms time-steps.
+		
+		\subsection{Communication}
+			
+			% Number of spikes produced, the form that spikes take, multicast,
+			% possible changes due to learning. Especially fun for real-time.
+	
+	
+	\section{Supercomputer technology}
+		
+		% Outline the top of the line from top500.
+		
+		\subsection{Anatomy}
+			
+			% What is in a typical super computer. Lots of CPU/GPU/Accel nodes with
+			% comparatively limited interconnect. Vast amounts spent on power, cooling
+			% etc.
+		
+		\subsection{Interconnect}
+			
+			% What these machines are designed to carry between nodes. Typically
+			% packet switched: messages containing destination and payload, hopping
+			% from node to node in the system.
+			
+			\subsubsection{Topology}
+				
+				% Topology has influence on structure of the system, super computers are
+				% optimised for local access of data near by. Two topologies are
+				% popular: trees and tori.
+				%
+				% Trees have low hop counts and expensive routers, tori have higher hop
+				% counts and cheaper routers. Both are easily partitioned.
+			
+			\subsubsection{Routing}
+				
+				% Route large (kb long) packets, mainly point-to-point, guaranteed
+				% delivery. Lots of buffering. Generally tightly integrated with link
+				% technology.
+			
+			\subsubsection{Link technology}
+				
+				% Universally high-speed-serial over optical and electrical links.
+				% Optical is expensive but good for long distances. Always-on and so the
+				% pressure is on to keep links fully loaded.
+	
+	
+	\section{Neuromorphic computing}
+		
+		% Hardware which mimics biological systems more directly, essentially
+		% optimised computers for neural simulations.
+		
+		\subsection{Analogue and mixed-mode}
+			
+			% Using analogue rather than digital electronics to accelerate the
+			% computation of the various functions involved. Analogue circuits can
+			% directly implement the differential equations required, can be very
+			% tricky to calibrate, also inherently fixed. Interconnects often tend to
+			% be digital to simplify things.
+			
+			\subsubsection{BrainScaleS}
+				
+				% Whole silicon wafer: extremely fast, extremely low power. Rather hard
+				% to calibrate. Fair amount of flexibility in neuron model.
+				%
+				% Two interconnection systems: L1 and L2. L1 is circuit switched mesh
+				% for low-power, low-latency connections, but very inflexible. L2 uses
+				% FPGAs to translate into 10 gigabit Ethernet or other links. More
+				% flexible and allows some scaling. Spikes multicast.
+				%
+				% Difficult to scale.
+			
+			\subsubsection{Neurogrid}
+				
+				% Very simple neural model, many chips in a tree. Communications are
+				% digital and certain neuron features, such as connection weights are
+				% modelled using probabilistic delivery. Spikes are serialised for each
+				% chip. Between chips a tree is used.
+				%
+				% TODO: Does it use multicast?
+				% TODO: Find out more about interconnect here.
+			
+		\subsection{Digital}
+			
+			% Use digital implementations of neurons, typically optimised in some
+			% fashion.
+			
+			\subsubsection{Bluehive}
+				
+				% FPGA based, custom high-speed-serial interconnect, same link tech as
+				% super computers, 3D torus network. Spike duplicated for all
+				% destinations.
+			
+			\subsubsection{SpiNNaker}
+				
+				% CPU based, custom asynchronous multicast interconnect but scaling up
+				% with high-speed serial 2D hexagonal torus network.
+	
+	
+	\section{SpiNNaker network architecture}
+		
+		% Greater detail intro to SpiNNaker since it will be the focus of this work
+		%
+		% Overview of system: cores, chips, boards, racks, cabinets. Network is
+		% hexagonal torus with nodes being chips.
+		
+		\subsection{Routing \& multicast}
+			
+			% Packet types and sizes. Table based routing, generally, multicast
+			% routing in SpiNNaker. Also describe the sort of fun which can be had
+			% with multicast, mention power savings due to less hops. Mention router
+			% simplicity, limitations, assumptions.
+		
+		\subsection{Link technologies}
+			
+			% Between and within chips use asynchronous links. Between boards this
+			% would be impractical due to number of wires and performance over long
+			% wires. Instead, high-speed serial via FPGAs is used. Minimal torus
+			% construction.
+	
+	\section{High-Speed Serial (HSS)}
+		
+		% Technology now used by most super computers and high-speed comms tasks.
+		% More complex than parallel but they scale up throughput better.
+		
+		\subsection{Eliminating skew}
+			
+			% Parallel vs Serial, problems with parallel.
+		
+		\subsection{Clock recovery}
+			
+			% Requires frequent transitions (e.g. using 8b/10b) even on idle line,
+			% makes idling expensive.
+		
+		\subsection{Clock correction}
+			
+			% Requires buffering clock/correction to deal with clock differences.
+		
+		\subsection{Error recovery}
+			
+			% Must retransmit packets with errors. Requires buffers.
+		
+		\subsection{Flow control}
+			
+			% Now unlimited amounts of data can be sent so must have way of applying
+			% back-pressure. Again, means more buffering and complexity.

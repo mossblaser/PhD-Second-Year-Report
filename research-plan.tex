@@ -1,0 +1,71 @@
+\chapter{Research plan}
+	
+	% Generally planning to massage the existing system to make better use of
+	% serial links, looking at powering down strategies and testing things both in
+	% simulation (using existing simulator) and also using real traffic in
+	% SpiNNaker. To this end I will be continuing background activities involving
+	% working with neural modelling.
+	%
+	% Gantt chart here...
+	
+	\subsection{FPGA-based routing}
+		
+		% Develop routing scheme for SpiNNaker packets suitable for peripheral, host
+		% and preliminary small-world communications via the SpiNNaker links. This
+		% scheme will continue to make use of the current HSS protocol blocks.
+		
+		\subsubsection{Host communication}
+			
+			% Snooping, loading, etc.
+		
+		\subsubsection{Peripheral communication}
+			
+			% Configuration and hetrogenaity
+		
+		\subsubsection{Board-to-board communication}
+			
+			% Small world networks
+	
+	
+	\subsection{SpiNNaker traffic analysis}
+		
+		% To better target efforts and gain further understanding, work with Mundrew
+		% on Nengo network experiments to assess performance.  Must try to get a
+		% picture of what demand for links will be like. High-speed links offer a
+		% unique peek into network traffic beyond what is offered by existing
+		% counters.
+	
+	\subsection{High-speed serial power control}
+		
+		% Work to try and make some power savings by powering down idle links or
+		% reducing speed (to reduce link transitions), taking into account latency
+		% concerns for SpiNNaker.
+		
+		\subsubsection{Power-down and bring-up}
+			
+			% Specify latency issues, describe current technologies for doing this and
+			% appropriate signalling stuff. See PCI-E, S-ATA and friends.
+		
+		\subsubsection{Speed changing}
+			
+			% Possible application of link speeds being set in response to demand.
+		
+		\subsubsection{Always-on links}
+			
+			% Use a selection of always-on serial links when demand is low or others
+			% are being powered up. How do small-world links fit in this picture?
+		
+		\subsubsection{`Santos-28' test chip}
+			
+			% A 28 nm test chip is being developed with TU Dresden to evaluate various
+			% technologies' performance for inclusion in a second generation SpiNNaker
+			% chip. There may be room in this space for my own involvement in this
+			% work at short notice.
+	
+	
+	\subsection{Performance evaluation}
+		
+		% Can build on work by Evangelos to see how performance in terms of power
+		% works out with various FPGA based things going on. Hopefuly steal some of
+		% his test networks. Can also sneak myself into work on SPAUN performance
+		% messings.

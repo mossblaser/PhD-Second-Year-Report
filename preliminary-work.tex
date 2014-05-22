@@ -1,0 +1,112 @@
+\chapter{Preliminary work}
+	
+	% General feeling has been learning about SpiNNaker's network, in particular
+	% looking at how the original async interconnect and routing behaves with
+	% Mohsen, focusing in on the high speed serial links and the constraints and
+	% features they offer.
+	
+	\section{SpiNNaker network modelling}
+		
+		% Colaboration with others researching simulator platforms, due for journal
+		% submission in coming months, final stages of writing. Context of the work:
+		% want to try out modelling on different platforms. My contribution: some
+		% writing and the development of an accurate software simulator for
+		% SpiNNaker's interconnect. This work indirectly offers interesting insights
+		% into behaviours due to the board-to-board links.
+		
+		\subsection{Software simulator model}
+			
+			% Model 18 cores as traffic generators/consumers. Links are modelled as
+			% delay elements (accurately captures req/ack links), internal arbitration
+			% scheme is modelled along with pipelined router.
+		
+		\subsection{Results}
+			
+			% Experiments performed showed highly matched behaviour between the model
+			% and SpiNNaker but reveal the effects of the non-homogeneity introduced
+			% by board-to-board links for certain traffic patterns.
+		
+		\subsection{Further work}
+			
+			% Plans to include models of SpiNNaker links. Preliminary trials at
+			% accurately modelling these have been unsuccessful. Will be used to guide
+			% work on these links.
+	
+	\section{SpiNNaker machine wiring}
+		
+		% Constraint of electrical high-speed-serial is that long wires are not
+		% allowed. For tori, this is a problem due to wrap-around.
+		
+		\subsection{Reducing wiring length}
+			
+			% Description of the folding technique
+		
+		\subsection{`SpiNNer' Wiring Guide Generator}
+			
+			% Python Library and various front-ends have been produced which produce
+			% wiring diagrams and listings. The tool has been successfuly used to
+			% assemble machines (pictures!) and provide orders for cabling for the
+			% next machines.
+	
+	
+	\section{Small-world networks}
+		
+		% Small world networks are: ... Allow lots of short paths, this means low
+		% latency, low power and less contention. We describe ways of augmenting the
+		% SpiNNaker network, making use of spare connections and resource for
+		% board-to-board links while taking advantage of the physical arrangement
+		% described in the previous section.
+		
+		\subsection{Constructing small-world networks}
+			
+			% Add random links and lo-and-behold, smallworldness!
+		
+		\subsection{Modelling and results}
+			
+			% Don't need too many links to get a good return in terms of reduced
+			% path length. Limiting results to short wires doesn't hurt too much,
+			% especially after folding.
+		
+		\subsection{Further work}
+			
+			% Non-uniformity to be studied. Also, plan to model this with more
+			% realistic traffic and experiment on SpiNNaker.
+	
+	
+	\section{SpiNNaker FPGA connectivity}
+		
+		% Work started at CapoCaccia with input from various parties to get
+		% SpiNNaker peripherals working. The start of a project to get peripherals
+		% properly integrated and generally add some routing smarts to the FPGAs
+			
+			\subsection{Existing infrastructure}
+				
+				% Description of what exists already in the board-to-board links,
+				% outline the protocol's principles. Also describe the rdy/vld
+				% interface.
+			
+			\subsection{Extension peripherals}
+				
+				% Describe principle of how a router will be integrated and streams
+				% merged.
+			
+			\subsection{Proof-of-concept `spiking button' peripheral}
+				
+				% Describe the demo and hardware used
+				
+				\subsubsection{Handling multiple link speeds}
+					
+					% Streams of packets being produced at different speeds due to slower
+					% peripheral FPGA board. Describe the interface's role, outline the
+					% mechanism and avoidance of buffering.
+				
+				\subsubsection{Merging packet streams}
+					
+					% Again, describe the problem, and the challenges of doing this
+					% without losing throughput.
+			
+			\subsection{Further work}
+				
+				% Next steps will involve getting basic routing up and running, then on
+				% to my planned project, see next chapter.
+	

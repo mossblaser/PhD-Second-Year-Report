@@ -1,0 +1,77 @@
+\documentclass[a4paper,12pt,titlepage]{report}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{tikz3d}
+\usepackage{ifthen}
+\usepackage[outline]{contour}
+\usepackage{color}
+
+% Grab the required TikZ libraries
+\usetikzlibrary{ hexagon
+               , calc
+               , backgrounds
+               , positioning
+               , decorations.pathreplacing
+               , decorations.markings
+               , arrows
+               , positioning
+               , automata
+               , shadows
+               , fit
+               , shapes
+               , arrows
+               }
+
+% Cache TikZ figures
+\usetikzlibrary{external}
+\tikzexternalize[prefix=tikzcache/]
+
+% Remove borders etc. from links added by hyperref
+\hypersetup{
+	colorlinks=false,
+	pdfborder={0 0 0},
+}
+
+% When adding a border around some text, this is how thick it should be.
+\contourlength{1.5pt}
+
+\title{Improving the Interconnection Network of a Brain Simulator}
+\author{Jonathan Heathcote}
+\date{The University of Manchester}
+\date{Draft \today}
+
+% Number subsubsections
+\setcounter{secnumdepth}{3}
+
+\begin{document}
+	
+	\maketitle
+	
+	\begin{abstract}
+		
+		TODO
+		
+	\end{abstract}
+	
+	\tableofcontents
+	\listoffigures
+	\listoftables
+	
+	\input{introduction}
+	\input{background}
+	\input{preliminary-work}
+	\input{research-plan}
+	\input{conclusion}
+	
+	% Number bib entries by order of appearance
+	\bibliographystyle{unsrt}
+	\bibliography{report}
+	
+\end{document}
