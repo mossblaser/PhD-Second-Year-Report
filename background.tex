@@ -1,23 +1,135 @@
 \chapter{Background}
 	
+	This chapter gives an overview of the problems involved in the simulation of
+	brains followed by a brief survey of current super computer technology and the
+	challenges it faces. This is followed by a summary of the leading
+	special-purpose neuromorphic architectures being developed to tackle the
+	shortcomings of modern supercomputers. The chapter concludes with a detailed
+	exploration of the SpiNNaker platform and the interconnection technology it
+	uses which form the basis of my research.
+	
 	\section{Simulating brains}
 		\label{sec:simulating-brains}
 		
 		% What is done, for what purpose
 		
+		The brain is an extremely complex and variable organ whose high-level
+		behaviours are similarly complex and variable. Efforts to understand the
+		brain, unsurprisingly, rely on simplified models of its function. This
+		section gives a brief history of the development of artificial neural
+		networks leading to an outline of the models used today. This is followed by
+		a description of the general structure and behaviour of simulators for such
+		models and the computational challenges this entails.
+		
 		\subsection{History of artificial neural networks}
 			
-			% Three generations and their differing aims.
+			The development of ANNs can be divided up into three coarse generations,
+			each increasing their level of biological realism \cite{vainbrand11}.
+			
+			The first generation of ANNs, such as the McCulloch-Pitts threshold neuron
+			\cite{mcculloch43}, consisted of testing if a simple, linear function of
+			the neuron's inputs was above a threshold value and outputting either a
+			`high' or `low' signal. The function used in each neuron and the pattern
+			of connectivity in the network define the behaviour of the network as a
+			whole.
+			
+			It was realised that communication between neurons is not level-based but
+			instead appears to be based on the rate at which `spikes' are produced (or
+			`fired') by neurons to their neighbours. The second generation of ANNs
+			seek to model this by representing the `firing rate' as their output in a
+			continuous value \cite{maass97}. Once again, the network's behaviour was
+			defined by the functions computed by each neuron and the network's
+			connectivity.
+			
+			\begin{figure}
+				\center
+				\input{|"python2 figures/snn-example.py"}
+				\caption{Simple leaky-integrate-and-fire neuron example.}
+				\label{fig:snn-example}
+			\end{figure}
+			
+			The third generation of ANNs extends the idea further by realising that
+			the firing rate is not the only significant factor but that the timing of
+			the arrival of spikes is significant too \cite{maass01}. In addition, many
+			of these models aim to reproduce observed physiological behaviours of
+			individual neurons, rather than simply recreate higher-level behaviours of
+			populations of neurons. The level of biological detail of such models
+			varies greatly but all tend to build on the `leaky integrate and fire'
+			model.
+			
+			Spikes arriving at a neuron cause ion channels to open temporarily
+			allowing a flow of current in or out of the neuron. The neuron integrates
+			the current over time, accumulating charge which gradually leaks away over
+			time. If the charge in the neuron reaches a certain threshold, it produces
+			a spike and its charge is reset. This process is illustrated in figure
+			\ref{fig:snn-example}.
+		
+		\subsection{Learning}
+			
+			In addition to the basic spiking behaviours exhibited by neurons, the
+			mechanism by which they learn is also the subject of much research.
+			Learning models in spiking neural networks largely revolve around
+			adjusting the `weights' associated with connections between neurons based
+			on the relative timing \cite{pfister06} or rate \cite{bienenstock82} of
+			spike arrivals at a neuron. These weights control the amount of current
+			that flows into a neuron when a spike arrives and thus the impact it may
+			have on the neuron's spiking behaviour. Some learning rules can also form
+			entirely new connections between previously disconnected neurons,
+			essentially assigning a weight non-zero to the connection
+			\cite{bamford10}.
 		
 		\subsection{Computation}
 			
-			% Number of neurons and synapses, amount of state, differential equation
-			% model, discrete time, typically 0.1-1.0 ms time-steps.
+			Computationally, spiking neural models can be relatively simple, the state
+			of the neuron is described by a differential equation over time. Neuron
+			states are typically updated with a fairly coarse granularity of once per
+			0.1 to 1.0 ms. Additional calculations are also required to update the
+			neurons' states upon spike arrival. In the case of networks featuring
+			learning models, spike arrivals also typically entail further calculations
+			in order to update weights.
+			
+			Given that biological systems may contain billions of neurons and
+			trillions of synapses spiking at an average rate of 10 Hz, this
+			constitutes a non-trivial amount of of computation even for the simplest
+			models. In order to maintain real-time performance, the simulation of
+			different neurons must be distributed across a large number of processing
+			cores.
 		
 		\subsection{Communication}
 			
 			% Number of spikes produced, the form that spikes take, multicast,
 			% possible changes due to learning. Especially fun for real-time.
+			
+			The feature of neural models which stresses simulators most, however, is
+			their communications requirements. Each neuron in biologically realistic
+			systems may be connected to around 10,000 other neurons. In distributed
+			systems, this means that each spike may need to be transmitted to a large
+			number of destinations. Conventional computer networks tend to be focused
+			on supporting efficient one-to-one connectivity. In many cases this means
+			that each spike must be repeatedly sent, once to each destination, which
+			costs both large amounts of network resource and also power. To achieve
+			greater efficiency, multicast communications can be used where the message
+			is sent once and is delivered to multiple locations.
+			
+			An additional challenge for interconnection models is the granularity of
+			communications in neural simulators. Spike messages encode only a very
+			limited amount of data: their source neuron and the time they were
+			produced. This means that individual messages sent through the network
+			tend to be very small even though the aggregate network utilisation may be
+			high. This pattern is directly opposed by conventional computational
+			problems which instead tend to transmit large, continuous blocks of data
+			at infrequent intervals. As a result, conventional networks can impose
+			large overheads when dealing with spikes.
+			
+			Luckily, much of the connectivity within the brain is highly local meaning
+			that neurons tend to mostly connect to physically nearby neurons. This
+			type of predominantly local communication is well supported by most
+			scalable computer networks such as those found in supercomputers. In order
+			to take advantage of this property, however, neural models must be
+			carefully laid out within a simulator's network. This problem known to be
+			NP-complete though highly performant heuristic solutions have been
+			developed for use in other fields such as VLSI and FPGA design
+			\cite{haldar00}.
 	
 	
 	\section{Supercomputer technology}
