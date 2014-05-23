@@ -135,19 +135,103 @@
 	\section{Supercomputer technology}
 		\label{sec:supercomputers}
 		
-		% Outline the top of the line from top500.
+		\begin{table}
+			\center
+			\begin{tabular}{r l r r r l l l}
+				\toprule
+				Rank & Name    & Pflops& Cores  & Nodes  & Topology & Interconnect          & Sources \\
+				\midrule                          
+				1 & Tianhe-2   & 33.86 & 3,120,000 & 16,000 & Fat-Tree & Electrical \& Optical & \cite{dongarra13} \\
+				2 & Titan      & 17.59 & 560,640   & 18,688 & 3D Torus & Electrical            & \cite{bland12} \\
+				3 & Sequoia    & 17.17 & 1,572,864 & 98,304 & 5D Torus & Electrical \& Optical & \cite{prickett10} \\
+				4 & K Computer & 10.51 & 705,024   & 68,544 & 6D Torus & Electrical            & \cite{fujitsu11,yokokawa11} \\
+				5 & Mira       &  8.59 & 786,432   & 49,152 & 5D Torus & Electrical \& Optical & \cite{prickett10} \\
+				\bottomrule
+			\end{tabular}
+			
+			\caption{Top Five `Top500' Super-Computers, November 2013 \cite{meuer13n}.}
+			\label{tab:top500}
+		\end{table}
+		
+		The Top500 list \cite{meuer13n} aims to enumerate, biannually, the 500
+		fastest super-computers ranked by their performance on the LINPACK benchmark
+		\cite{dongarraLINPAC}. The list offers an insight into the current
+		state-of-the-art for high-performance computing. Table \ref{tab:top500}
+		shows the top five machines in the Top500 list released in November 2013
+		along with basic details of the type of interconnection involved. In this
+		section an overview is given of the architecture of these large scale
+		machines.
+		
+		The LINPACK benchmark performs computations to ``analyze and solve linear
+		equations and linear least-squares problems'' to produce a computational
+		load representative of certain computational tasks common to scientific
+		computing \cite{dongarra84}. In particular it is a CPU-bound problem which
+		attempts to measure the peak CPU performance achievable\footnote{Where CPU
+		Performance is measured in Petaflops: how many quadrillion ($10^{15}$)
+		floating point operations can be performed per second.} but without any
+		significant indication of the performance of the network which connects the
+		system together \cite{dongarra07}.
+		
+		Since simulation of spiking neural networks requires a large amount of
+		communication but relatively small amounts of computation, this benchmark is
+		clearly not representative of the workload of such a task.  In fact, many
+		modern super-computer workloads also rely on network performance to a
+		greater degree than the LINPACK benchmarks and as a result a new ranking,
+		Graph500 \cite{murphy13n}, has appeared to address this shortcoming. This
+		complementary ranking instead uses benchmarks based on graph traversal
+		problems \cite{murphy10}. Such problems rely on having efficient
+		point-to-point communication between different parts of the system where
+		each section of the graph resides. Since there is a high degree of
+		correlation between the rankings of the two lists, we just consider the more
+		comprehensive Top500 list.
+		
 		
 		\subsection{Anatomy}
 			
 			% What is in a typical super computer. Lots of CPU/GPU/Accel nodes with
 			% comparatively limited interconnect. Vast amounts spent on power, cooling
 			% etc.
+			
+			Supercomputers are typically built by combining a large number of
+			`processing elements' in such a way that they are able to coherently
+			perform a single task. The processing elements used can come in many forms
+			though the three most prevalent are:
+			
+			\begin{description}
+				
+				\item[General Purpose Processor] A conventional processor `core' as
+				found in desktop and mobile computer CPUs. These flexible devices have
+				historically represented the vast majority of the Top500's computing
+				power.
+				
+				\item[Graphics Processing Unit (GPU)] A specialised processor which is
+				able to efficiently perform the same operation across a large number of
+				data elements simultaneously (a technique called vector processing). The
+				Titan super-computer notably makes extensive use of GPUs \cite{bland12}
+				and these are growing in popularity in high-end super computers.
+				
+				\item[Accelerators] Increasingly other forms of more specialised compute
+				resource, such as the Intel Xeon Phi accelerator used in Tianhe-2, are
+				being used. The Xeon Phi contains 57 medium-sized general purpose cores
+				which can be used to complement a conventional multi-core system
+				\cite{dongarra13}. Other popular alternatives include FPGAs which can be
+				reprogrammed to efficiently implement specialised algorithms in
+				hardware.
+				
+			\end{description}
+			
+			A number of these individual processing elements are then combined
+			together to create a single `node' in the system. This may take the form
+			of an individual chip or a single circuit board. Typically the elements
+			within a node are able to communicate relatively cheaply while messages to
+			remote nodes must traverse a slower system-wide interconnection network.
 		
 		\subsection{Interconnect}
 			
-			% What these machines are designed to carry between nodes. Typically
-			% packet switched: messages containing destination and payload, hopping
-			% from node to node in the system.
+			In this subsection, the general structure and function of super computer
+			interconnection networks is described, beginning with details of the
+			high-level structure of the system and moving towards the low-level
+			functions of the routers and link technologies used.
 			
 			\subsubsection{Topology}
 				
@@ -157,6 +241,122 @@
 				%
 				% Trees have low hop counts and expensive routers, tori have higher hop
 				% counts and cheaper routers. Both are easily partitioned.
+				
+				The topology of a supercomputer's interconnection network dictates the
+				physical connections required to build it and constrains the patterns of
+				communication the system can efficiently support. Topologies are
+				typically designed such that communication between near-by nodes is
+				cheap and does not compete with distant nodes for communication
+				resources. The top five machines in the Top500 list achieve this using
+				the `fat tree' and `torus' topologies which are described below:
+				
+				\begin{figure}
+					\begin{subfigure}[t]{\textwidth}
+						\center
+						\input{figures/fat-tree-concept}
+						\caption{Basic fat tree links.}
+						\label{fig:fat-tree-concept}
+					\end{subfigure}
+					
+					\vspace{1.5em}
+					
+					\begin{subfigure}[t]{\textwidth}
+						\center
+						\input{figures/fat-tree-closs}
+						\caption{Folded Clos network.}
+						\label{fig:fat-tree-closs}
+					\end{subfigure}
+					
+					\caption[Fat tree topologies.]{Fat tree topologies. Thicker lines
+					represent higher bandwidth links.}
+					\label{fig:fat-tree}
+				\end{figure}
+			
+				In a basic fat tree, nodes are connected as leaves in a tree structure
+				of multiple layers of switches (figure \ref{fig:fat-tree-concept}).
+				Connections higher in the hierarchy are connected via links of
+				increasing bandwidth to avoid bandwidth bottle-necks.  Nodes communicate
+				by sending messages up the tree until it reaches a node with its
+				destination as a child.
+				
+				In practice, as in `Tianhe-2', it is not possible to build switches with
+				the required bandwidth. In addition, the root switch is a potential
+				single point of failure for the whole system. As a result, folded Clos
+				networks are often used instead (figure \ref{fig:fat-tree-closs}) and
+				have become synonymous with the fat tree topology. Here higher levels of
+				the hierarchy are duplicated introducing redundancy and spreading the
+				load.
+				
+				Fat trees support small maximum `hop' counts, that is the number of hops
+				a message has to make between nodes in the network. Specifically,
+				average hop counts grow in fat trees by $O(\log{N})$ with respect to the
+				number of nodes in the system. Additionally, they support cheap
+				communication between nodes nearby in the tree.
+				
+				Unfortunately, tree-based networks depend on complex high-radix switches
+				to connect many nodes simultaneously.  Tianhe-2, for example, has
+				thirteen 576-port switches based on a custom router chip. Such
+				architectures additionally often prove difficult to extend once
+				implemented \cite{dally04}.
+				
+				\begin{figure}
+					\begin{subfigure}[t]{\textwidth}
+						\center
+						\input{figures/torus-flat}
+						\caption{Mesh (Grey lines show wrap-around connections added in a
+						torus)}
+						\label{fig:torus-flat}
+					\end{subfigure}
+					
+					\vspace{1em}
+					
+					\begin{subfigure}[t]{\textwidth}
+						\center
+						\input{figures/torus-pipe}
+						\caption{Rolled into a tube}
+						\label{fig:torus-pipe}
+					\end{subfigure}
+					
+					\vspace{1em}
+					
+					\begin{subfigure}[t]{\textwidth}
+						\center
+						\input{figures/torus-3D}
+						\caption{Bent into a torus}
+						\label{fig:torus-3D}
+					\end{subfigure}
+					
+					\caption{Transformation of a mesh into a torus.}
+					\label{fig:forming-a-torus}
+				\end{figure}
+			
+				The most common topology in the top-five is the torus (also known as a
+				$k$-ary $n$-cube). Here, nodes are arranged in a $n$-dimensional mesh.
+				Nodes at the extreme edges of the mesh are connected together to form a
+				torus. A 2D example is given in figure \ref{fig:forming-a-torus} which
+				when rolled up (figure \ref{fig:torus-flat}) and bent into a doughnut,
+				or torus shape (figure \ref{fig:torus-3D}) gives the torus network its
+				name.
+				
+				Each node is able to communicate directly with its immediate neighbours
+				in each dimension, that is above, below, left and right in the 2D case.
+				More distant nodes are able to communicate by forwarding messages via
+				intermediate nodes.
+				
+				As in the fat tree, nearby nodes are cheap to reach however a greater
+				number of hops is required in the worst case: in a torus $k$ nodes long
+				in each of $n$ dimensions the worst case path length is $\frac{kn}{2}$
+				\cite{dally04}.
+				
+				Switches in torus networks can be simpler meaning that the worst case
+				performance of both types of network can be comparable (17 $\mu$s for a
+				broadcast in Tianhe-2 and 9 $\mu$s in a Blue Gene/Q such as Sequoia
+				\cite{dongarra13,morozov12}).
+				
+				The differences in performance between tori and trees depends strongly
+				on the application, however. Work by Vainbrand and Ginosar
+				\cite{vainbrand11} showed that for spiking neural networks torus
+				networks are preferable to fat-trees.
 			
 			\subsubsection{Routing}
 				
