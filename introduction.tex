@@ -4,108 +4,125 @@
 	Current computer technologies have enabled everything from global,
 	near-instantaneous communications via the internet to faster and more
 	effective cancer treatments \cite{nassif}. Despite this, the brain still
-	outperforms conventional digital computers at many tasks; for example brains
-	are able learn far more flexibly than any known computer system.
+	outperforms conventional digital computers at many tasks such as learning,
+	fault tolerance and energy efficiency.
 	
-	Considerable effort has been made by researchers to understand how the brain
-	works. The small-scale operation of individual neurons in the brain is now
-	relatively well understood but the manner of their complex interactions is
-	still not clear. Current attempts to understand this involve modelling the
-	behaviour of huge networks of neurons with the hope of gaining a better
-	understanding of their collective behaviour. Such models are challenging to
-	fit into modern computer architectures since the vast parallelism available to
-	neurons in the brain sharply contrasts with the highly serial computing
+	Considerable effort is being made by researchers across many disciplines to
+	understand how the brain works. The small-scale, chemical operation of
+	individual neurons in the brain is now relatively well understood but their
+	complex interactions and behaviour remain murky \cite{dayan03}. Many current
+	attempts to understand the brain's higher-level behaviour involve modelling
+	huge networks of neurons to observe their collective behaviour.  Such models
+	are challenging to fit into modern computer architectures since the vast
+	parallelism and interconnection resources available to neurons in the brain
+	sharply contrasts with the highly serial, comparatively isolated computing
 	resources available today.
-
-	In this report I will elaborate on the role that modelling has on
-	understanding the brain and in particular on the work being done to build
-	machines to fulfil this task. I will also outline the importance of the
-	interconnection networks in brain simulations and describe the work I have
-	been doing in this area.
+	
+	This report will elaborate on the role of modelling in understanding the brain
+	and, in particular, on the work being done to build specialist machines to
+	fulfil this task. In particular it will focus on the interconnection networks
+	of these devices and my work in this area.
 	
 	\section{Why model the brain?}
 	
-		Cutting-edge neural models can be broadly divided into two types. The first
-		type uses simplified models of neurons in large networks. Models of this
-		type, such as Spaun \cite{eliasmith12}, are able to demonstrate a remarkable
-		range of cognitive abilities such as memory, problem solving and pattern
-		recognition. Spaun is notable due to its range of functional and realistic
-		behaviours. For example, it exhibits very similar behaviour to humans in
-		terms of the way its behaviour degrades over time due to aging or illness.
-		It also suffers the same gradual reduction in function as random neurons die
-		off. This level of realism means that experiments which would not be
-		possible to carry out on real brains, such as testing hypotheses of the
-		causes of certain illnesses, may become feasible using simulated models.
+		Cutting-edge neural models can be broadly divided into two categories. The
+		first focuses on large networks of simplified models of neurons.  The second
+		instead focuses on very small numbers of extremely detailed neuron models.
 		
-		In contrast the second type of model has focused on developing
-		high-accuracy simulations of much smaller collections of neurons to test
-		understanding of biological processes. Such models are highly biologically
-		plausible but do not result in the complex, high-level behaviour shown by
-		simulators such as Spaun.
+		Models of this type, such as Spaun \cite{eliasmith12}, are able to
+		demonstrate a remarkable range of cognitive abilities such as memory,
+		problem solving and pattern recognition. Models such as Spaun are notable
+		due to their range of functional and realistic behaviours. For example,
+		Spaun exhibits very similar responses to humans when faced with simulated
+		ageing processes and illness. In particular, it also suffers the same
+		gradual reduction in overall function as individual neurons die off, a
+		property not shared by modern computers which can fail immediately with the
+		loss of a single transistor. This level of realism could soon enable
+		experiments which would not be possible to carry out on real brains, such as
+		testing hypotheses of the causes of certain illnesses.
 		
-		This work focuses on the first type of model as these models present a
-		greater challenge to modern computer systems. Models of the second type,
-		such as the Blue Brain project, are able to utilise commercial
-		supercomputers to achieve simulation speeds around one order of magnitude
-		below biological real-time \cite{markram06}. By contrast models of the first
-		type, such as Spaun, do not easily fit current supercomputer architectures
-		and can take around two and a half hours of compute time to simulate one
-		second of neural activity on a high-end workstation computer.
-		\S\ref{sec:simulating-brains} describes the basic mechanism of these neural
-		simulators and their computational challenges in further detail.
+		In contrast the second type of model has lead to a much deeper understanding
+		of biochemical processes. Though these models tend to feature great
+		biological accuracy, they typically offer only limited into the larger-scale
+		function of the brain.
+		
+		As a computer scientist, the first type of model presents two particularly
+		enticing properties aside from the enhancement of biological understanding.
+		The first is their growing capability for fault-tolerant, efficient
+		high-level computation from which much could be learnt. The second property,
+		and the focus of my research, is that the large-scale models present a huge
+		challenge to modern computing systems due to their sheer scale and unusual
+		computational requirements. Models of the second type, such as the Blue
+		Brain project, are able to utilise commercial supercomputers to achieve
+		simulation speeds only one order of magnitude below biological real-time
+		\cite{markram06}. By contrast models of the first type, such as Spaun, do
+		not easily fit current supercomputer architectures and can take around two
+		and a half hours of compute time to simulate one second of neural activity
+		on a high-end workstation computer. In \S\ref{sec:simulating-brains} the
+		basic mechanism of large-scale neural models is described along with the
+		associated computational challenges in further detail.
 	
 	\section{Conventional supercomputer approaches}
 	
-		Conventional supercomputers are designed to provide immense computational
-		power with quadrillions ($10^{15}$) of numerical calculations being
-		performed per second. Despite such impressive feats of computation, these
-		machines often feature relatively slow interconnection networks tying the
-		internal processing elements together. This balance of great computation and
-		limited communication is contrary to the brain whose individual neurons
-		offer relatively little computational power but are extraordinarily well
-		connected.
+		Supercomputers such as Tianhe-2, currently the worlds
+		fastest\cite{meuer13n}, are designed to provide immense computational power
+		with quadrillions ($10^{15}$) of numerical calculations being performed per
+		second. Despite such impressive feats of computation, these machines often
+		feature interconnection networks, which tie the internal processing elements
+		together, with comparatively low performance. This balance of great
+		computation and modest communication is contrary to the brain whose
+		individual neurons offer relatively little computational power but are
+		extraordinarily highly interconnected.
 		
-		The Blue Brain project is unusual in its use of conventional supercomputers
-		but is severely limited in network size because of this.  Only around
-		100,000 neurons can be simulated compared with almost 100 billion in the
-		human brain.
+		This mismatch can be seen in the simulation performance figures posted by
+		leading large scale experiments. For example IBM, as part of DARPA's SyNAPSE
+		programme, have constructed a model featuring $53 \times 10^{10}$ neurons
+		connected via $1.37 \times 10^{14}$ synapses on a Blue Gene/Q super computer
+		\cite{ibm13}. Though a formidable achievement, the model runs $1,542\times$
+		slower than biological real-time and consumes $394,500\times$ more power
+		than a similarly sized brain \cite{drubach00}. In the short term, this
+		prevents the use of such models in robotics experiments which require
+		real-time performance. In the longer term, realistic models which take years
+		to develop would find themselves requiring multi-millennia runtimes just to
+		reach the level of a toddler rendering such work impractical.
 		
-		\S\ref{sec:supercomputers} goes into greater detail on current super
-		computer architectures and their strengths and weaknesses.
+		\S\ref{sec:supercomputers} goes into greater detail on the current
+		state-of-the-art for super computer architectures and their suitability for
+		neural simulations.
 	
 	\section{The importance of interconnect}
 		
-		Given the unsuitability of traditional supercomputer architectures, my
-		research focuses on the challenge of developing new architectures for the
-		simulation of large-scale networks, such as Spaun, which are heavily
-		communication bound.  The SpiNNaker project \cite{furber06} has developed
-		one such architecture based on a network of over one million small,
-		low-power processors. The purpose-built interconnection network is designed
-		to handle neural simulations with up to one billion neurons running in
-		biological real-time. A detailed introduction to the SpiNNaker architecture
-		is given in \S\ref{sec:spinnaker}.
+		Given the unsuitability of traditional supercomputer architectures, a number
+		of specialised architectures have been developed. These architectures
+		generally feature novel computational resources and, importantly, generous
+		interconnection networks.
+		
+		The SpiNNaker project \cite{furber06} is one such architecture based on a
+		custom interconnection network which is being scaled to over one million
+		small, low-power computer processors. The purpose-built interconnection
+		network is designed to handle the unusual traffic load of neural simulations
+		with up to one billion neurons and one trillion synapses running in
+		biological real-time.
+		
+		As SpiNNaker scales up from hundreds of processors to millions, a new type
+		of `high-speed serial' (HSS) interconnect technology has been introduced to
+		keep the construction of the machine practical. These technologies have very
+		different qualities to SpiNNaker's original network and my research aims to
+		better understand and exploit this new resource. In \S\ref{sec:spinnaker}
+		the SpiNNaker architecture is introduced in greater detail and in
+		\S\ref{sec:high-speed-serial} the properties of the new link technologies
+		being introduced are described.
+		
 		
 		% TODO: reference relevant section where I exploit HSS.
 		
-		SpiNNaker's interconnection network is designed to allow efficient
-		transmission of signals produced by simulated neurons. As the system scales
-		up from tens to tens-of-thousands of nodes, new types of high-speed serial
-		(HSS) based interconnection technology have been introduced to keep the
-		wiring in the system practical. These technologies, described in
-		\S\ref{sec:high-speed-serial}, have very different qualities to SpiNNaker's
-		original network and my work aims to better understand and exploit this
-		resource.
-		
-		Practical issues when designing interconnect, such as wiring complexity, are
-		studied in \S\ref{sec:wiring-up-large-spinnaker-machines} where the task of
-		wiring up large SpiNNaker systems consisting of 1,200 circuit boards is
-		tackled. This is followed by the development of an unconventional,
-		semi-random interconnection network design which takes into account these
-		wiring considerations in \S\ref{sec:small-world-supercomputers}. This
-		semi-random design of network has the potential to improve the performance
-		of SpiNNaker with a minimal additional cost in cabling requirements.
+		Preliminary work, described in chapter \ref{sec:preliminary-work} has
+		focused on building better understanding of SpiNNaker's native interconnect
+		and investigating ways of better exploiting the resources of the new HSS
+		interconnect.
 	
-		My work will develop a new architecture intended to succeed SpiNNaker with a
-		focus on the design of the interconnection network.
-		\S\ref{sec:research-plan} outlines the research I plan to undertake to reach
-		this goal following on from my preliminary studies.
+		From this foundation, my research will develop improved techniques for
+		utilising HSS in the context of neural simulation systems such as SpiNNaker
+		with a focus on energy efficiency and simulation speed. Chapter
+		\ref{sec:research-plan} outlines the research plan that will be undertaken
+		to reach this goal.
