@@ -358,17 +358,66 @@
 				\cite{vainbrand11} showed that for spiking neural networks torus
 				networks are preferable to fat-trees.
 			
-			\subsubsection{Routing}
-				
-				% Route large (kb long) packets, mainly point-to-point, guaranteed
-				% delivery. Lots of buffering. Generally tightly integrated with link
-				% technology.
-			
 			\subsubsection{Link technology}
 				
 				% Universally high-speed-serial over optical and electrical links.
 				% Optical is expensive but good for long distances. Always-on and so the
 				% pressure is on to keep links fully loaded.
+				
+				Interconnect in modern super computers is made up almost exclusively of
+				high-speed serial links running over either electrical or optical
+				connections.
+				
+				Electrical transmission technologies are generally much cheaper than
+				optical for short distances and lower bandwidths. As a result
+				connections between physically neighbouring nodes are almost universally
+				connected via such links.  Optical links, however, are favoured by super
+				computer designs between cabinets containing many individual nodes in
+				systems such as Blue Gene/Q and Tianhe-2 \cite{dongarra13,prickett10}.
+				These optical links are typically used to carry the equivalent of many
+				electrical signals and side-step difficulties with driving long distance
+				electrical connections.
+				
+				High-speed serial links, which are described in more detail in a later
+				section, use a single, high-frequency signal which encodes both data and
+				a clock signal. This has a side-effect that the link must be constantly
+				powered on in order to maintain a lock on the clock.  Power-efficient
+				use of the link therefore requires implies that either the link is
+				heavily loaded or that traffic in the network tolerate long latencies of
+				thousands of cycles during link power-up \cite{soteriou03}. For neural
+				simulations, which are generally latency sensitive and produce difficult
+				to predict network traffic, this may require careful tuning of link
+				behaviour to achieve power good efficiency.
+				
+				% TODO: Describe power control options for neural things
+			
+			\subsubsection{Packet formatting}
+				
+				Super-computer networks are generally designed to handle the transfer of
+				large bursts of data on the order of several kilobytes in length making
+				use of technologies such as Message Passing Interface (MPI)
+				\cite{mpiforum12}. Since every MPI message must contain a header
+				describing, for example, the message's origin and purpose, longer
+				messages keep the overall overhead introduced low.
+				
+				This pattern is repeated in the low-level link protocols used by
+				supercomputers too.  For example, in the widely used InfiniBand
+				high-speed serial interconnect technology, 120 bytes of metadata are
+				added to each packet \cite{infinibandta08}. This metadata allows the
+				system to perform important tasks such testing for, and retransmitting,
+				corrupt packets, route packets to their correct destination and apply
+				flow control. Each packet can contain up to 4,096 bytes of payload
+				meaning the overhead can be as low as 2.8\% protocol overhead.
+				
+				This pattern of communication matches many super computer applications
+				as is reflected by the prominence of array and matrix functions in
+				parallel programming APIs such as MPI. Unfortunately, this is a poor
+				match for neural simulations which transmit only a single 32-bit integer
+				to communicate spikes. If such a spike were transmitted individually
+				over an InfiniBand link, the metadata would make up 96.8\% of the packet
+				wasting significant bandwidth and energy.
+				
+				% TODO: Talk about work done by Xilinx and others. (Maybe?)
 	
 	
 	\section{Neuromorphic computing}
