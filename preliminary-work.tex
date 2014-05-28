@@ -1,37 +1,20 @@
 \chapter{Preliminary work}
 	\label{sec:preliminary-work}
 	
-	% General feeling has been learning about SpiNNaker's network, in particular
-	% looking at how the original async interconnect and routing behaves with
-	% Mohsen, focusing in on the high speed serial links and the constraints and
-	% features they offer.
+	% TODO: Add more linking together perhaps?
 	
-	\section{SpiNNaker network modelling}
-		
-		% Colaboration with others researching simulator platforms, due for journal
-		% submission in coming months, final stages of writing. Context of the work:
-		% want to try out modelling on different platforms. My contribution: some
-		% writing and the development of an accurate software simulator for
-		% SpiNNaker's interconnect. This work indirectly offers interesting insights
-		% into behaviours due to the board-to-board links.
-		
-		\subsection{Software simulator model}
-			
-			% Model 18 cores as traffic generators/consumers. Links are modelled as
-			% delay elements (accurately captures req/ack links), internal arbitration
-			% scheme is modelled along with pipelined router.
-		
-		\subsection{Results}
-			
-			% Experiments performed showed highly matched behaviour between the model
-			% and SpiNNaker but reveal the effects of the non-homogeneity introduced
-			% by board-to-board links for certain traffic patterns.
-		
-		\subsection{Further work}
-			
-			% Plans to include models of SpiNNaker links. Preliminary trials at
-			% accurately modelling these have been unsuccessful. Will be used to guide
-			% work on these links.
+	The preliminary work outlined in this chapter has concentrated on developing a
+	fuller understanding of the interconnection networks used in SpiNNaker. The
+	chapter begins with work to develop a technique for positioning SpiNNaker
+	boards in a system such that wires between them were kept short enough to
+	allow the use of electrical connections. This was then extended to examine the
+	possibility of augmenting SpiNNaker's board-to-board connections to form a
+	small-world network boasting reduced latency at little added cost. This is
+	followed with an overview of work done to accurately model SpiNNaker's
+	interconnection network. The chapter concludes with a discussion of progress
+	made towards extending SpiNNaker's high-speed board-to-board links to support
+	connection of both peripherals and other connection topologies (e.g. small
+	world).
 	
 	\section{SpiNNaker machine wiring}
 		
@@ -72,6 +55,34 @@
 			
 			% Non-uniformity to be studied. Also, plan to model this with more
 			% realistic traffic and experiment on SpiNNaker.
+	
+	
+	\section{SpiNNaker network modelling}
+		
+		% Colaboration with others researching simulator platforms, due for journal
+		% submission in coming months, final stages of writing. Context of the work:
+		% want to try out modelling on different platforms. My contribution: some
+		% writing and the development of an accurate software simulator for
+		% SpiNNaker's interconnect. This work indirectly offers interesting insights
+		% into behaviours due to the board-to-board links.
+		
+		\subsection{Software simulator model}
+			
+			% Model 18 cores as traffic generators/consumers. Links are modelled as
+			% delay elements (accurately captures req/ack links), internal arbitration
+			% scheme is modelled along with pipelined router.
+		
+		\subsection{Results}
+			
+			% Experiments performed showed highly matched behaviour between the model
+			% and SpiNNaker but reveal the effects of the non-homogeneity introduced
+			% by board-to-board links for certain traffic patterns.
+		
+		\subsection{Further work}
+			
+			% Plans to include models of SpiNNaker links. Preliminary trials at
+			% accurately modelling these have been unsuccessful. Will be used to guide
+			% work on these links.
 	
 	
 	\section{SpiNNaker FPGA connectivity}
