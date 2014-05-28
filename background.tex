@@ -422,8 +422,18 @@
 	
 	\section{Neuromorphic computing}
 		
-		% Hardware which mimics biological systems more directly, essentially
-		% optimised computers for neural simulations.
+		So-called `Neuromorphic' systems aim to reproduce neuro-biological phenomena
+		using conventional electronic circuits \cite{mead90}. Neuromorphic computing
+		devices are generally specialised computers which allow time and power
+		efficient modelling of networks of neurons. While neuromorphic devices vary
+		widely in their construction, scale, accuracy and flexibility this section
+		aims to briefly survey a representative selection of current approaches.
+		
+		This section divides its attention between neuromorphic systems which
+		unconventionally utilise analogue components to accelerate computation and
+		those which take a purely digital approach. This section concludes with a
+		brief overview of SpiNNaker, the machine which forms the focus of this work
+		and whose architecture is discussed in depth in the next section.
 		
 		\subsection{Analogue and mixed-mode}
 			
@@ -432,6 +442,34 @@
 			% directly implement the differential equations required, can be very
 			% tricky to calibrate, also inherently fixed. Interconnects often tend to
 			% be digital to simplify things.
+			
+			Though analogue technology has long been out of favour for general purpose
+			computing, neural simulation lends itself to analogue technology.  Digital
+			systems offer exact, repeatable computation and communication at the
+			expense of power and complexity. The brain, and many neural models,
+			however, do not require such precision and here analogue approaches offer
+			the potential for both power, area and performance improvements. For
+			example, a leaky integrator can be implemented using just a capacitor and
+			resistor while the equivalent digital circuit would use tens of
+			transistors \cite{misra10}.
+			
+			A wide range of techniques for implementing neural models in analogue
+			circuitry has been proposed \cite{graf86,holler89,agranat90,azghadi13}.
+			Unfortunately though the lack of precision of analogue circuits is not a
+			problem for neural modelling, the lack of consistency is. The same
+			analogue circuit may have widely different characteristics in one part of
+			a chip compared to another due to variations in the silicon wafer. Such
+			circuits must be calibrated to allow meaningful simulations to take place.
+			In analogue addition circuits must tolerate changes in temperature and
+			voltage without effecting the model's behaviour.
+			
+			So-called `mixed mode' systems have been designed such as BrainScaleS and
+			Neurogrid, described below, which combine analogue computational
+			components with digital communication \cite{maguire07,choudhary12}. The
+			use of digital communication avoids issues with inconsistencies in
+			interconnect circuitry across the chip while also simplifying routing of
+			spikes which can then share a limited number of wires using conventional
+			digital multiplexing methods.
 			
 			\subsubsection{BrainScaleS}
 				
@@ -444,6 +482,72 @@
 				% flexible and allows some scaling. Spikes multicast.
 				%
 				% Difficult to scale.
+				
+				The BrainScaleS project makes use of wafer-scale integration where, in
+				essence, multiple `chips' (reticles) are produced and wired together
+				within a single silicon wafer. Typically the wafer would be sliced into
+				individual reticles which would be packaged as a chip but here, space
+				between the reticles is used to build an interconnection network to
+				yield a single coherent system. A system built from a single wafer is
+				able to simulate a network of around 200,000 neurons at up to $10^5$
+				times biological real-time while using 6,000 times less power than a
+				conventional super-computer \cite{schemmel08}.
+				
+				\begin{figure}
+					\center
+					\begin{subfigure}[b]{0.45\textwidth}
+						\center
+						\input{figures/brainscales-wafer}
+						\caption{BrainScaleS wafer with usable reticles shown in light
+						grey with eight ANCs each.}
+						\label{fig:brainscales-wafer}
+					\end{subfigure}
+					\hspace{1ex}
+					\begin{subfigure}[b]{0.45\textwidth}
+						\center
+						\input{figures/brainscales-l1}
+						\caption{L1 interconnect between ANCs with sparse cross-bar
+						switches at intersections.}
+						\label{fig:brainscales-l1}
+					\end{subfigure}
+					
+					\caption{Overview of the BrainScaleS topology.}
+					\label{fig:brainscales-topology}
+				\end{figure}
+				
+				As shown in figure \ref{fig:brainscales-wafer}, each reticle on the
+				wafer (outlined in black) contains eight Analog Neural-Network Chips
+				(ANCs) (outlined in grey) which can be programmed to model up to 254
+				neurons \cite{schemmel10}. There are two types of (digital) interconnect
+				between ANCs in the system named `level 1' (L1) and `level 2' (L2) which
+				are described below.
+			
+				The L1 network is a mesh network connecting all the ANCs on the same
+				wafer together as shown in figure \ref{fig:brainscales-l1}. Horizontal
+				and vertical links feature 64 and 128 `lanes' each which can be
+				allocated to connecting ANCs together \cite{fieres08}. The lanes are
+				circuit-switched meaning that connecting a set of points in the mesh
+				`uses up' lanes along that path preventing others from using them.
+				Sparse cross-bar switches are used at the intersection points to cheaply
+				connect subsets of the lanes in the intersecting links and thus route
+				signals around the system.
+				
+				Circuit switched networks offer extremely low latency, low-power
+				connections between ANCs compared with a packet switched network (as
+				used in super computers). This performance comes at the expense of
+				flexibility, however, as lanes, once allocated, cannot be used for any
+				other purpose even when idle. This can make changing the connectivity
+				within the network at runtime difficult \cite{dally04}, a task required
+				by some learning rules.
+				
+				Since the L1 network is limited to a single wafer, the L2 network aims
+				to work around this limitation. The L2 network is based on 10 gigabit/s
+				Ethernet with packets being routed between wafers using off-the-shelf
+				network switches or FPGAs \cite{schemmel10}. This network suffers higher
+				latencies than the L1 network but allows signals to be routed much more
+				flexibly allowing expansion to multiple wafers and other peripherals.
+				Ethernet also is largely optimised for transmission of larger chunks of
+				data as found in super computers.
 			
 			\subsubsection{Neurogrid}
 				
