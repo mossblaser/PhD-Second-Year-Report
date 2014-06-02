@@ -567,6 +567,12 @@
 					\label{fig:neurogrid-chip}
 				\end{figure}
 				
+				% XXX: Not leaves in the tree
+				% XXX: Supports multicast...
+				% XXX: Broadcasts to subtrees requiring them to filter
+				% XXX: Uses 1-of-2 code for some comms
+				% XXX: Async circuits, only active on events
+				
 				As in the BrainScaleS system, Neurogrid features an analogue neuron
 				model and digital interconnect. Each Neurogrid chip contains a 2D grid
 				of $256\times256$ analogue neuron models (hence the name) as shown in
@@ -580,6 +586,10 @@
 				model these \cite{choudhary12}. Scaling to larger networks is done by
 				combining Neurogrid chips in a tree structure by extending the FPGA
 				routing system.
+				
+				% Though tree bandwidth is limited, it avoids deadlock in multicast case
+				% due to this structure. Argue that though throughput is root(n) lower,
+				% latency is root(n)/log(n) shorter.
 				
 				% TODO: Interconnection is special purpose, only spikes passed around
 				% TODO: Multicast is hard since 65,536 neurons to multicast out to,
