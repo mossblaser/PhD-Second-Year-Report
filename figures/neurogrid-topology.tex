@@ -1,0 +1,73 @@
+\begin{tikzpicture}[thick]
+	
+	\pgfmathsetlengthmacro{\layersep}{-1.3cm}
+	\pgfmathsetlengthmacro{\chipsize}{0.8cm}
+	
+	% A neurocore chip/tree element. Arguments:
+	%  #1 ID
+	%  #2 Position
+	\newcommand{\neurocore}[2]{
+		\node (#1) at (#2)
+		      [ draw, rectangle
+		      , inner sep=0
+		      , minimum width =\chipsize
+		      , minimum height=\chipsize
+		      ]
+		      {};
+		
+		\node (#1 t label) [below      =0 of #1.north]      {\tiny{}T};
+		\node (#1 l label) [above right=0 of #1.south west] {\tiny{}L};
+		\node (#1 r label) [above left =0 of #1.south east] {\tiny{}R};
+		
+		\coordinate (#1 t) at (#1 t label.north);
+		\coordinate (#1 l) at (#1 l label.south);
+		\coordinate (#1 r) at (#1 r label.south);
+	}
+	
+	% FPGA
+	\node (fpga) at (3.5, -1*\layersep)
+	      [ draw, rectangle
+	      , inner sep=0.1cm
+	      , minimum width =\chipsize
+	      , minimum height=\chipsize
+	      ]
+	      {\footnotesize{}FPGA};
+	
+	% Root
+	\neurocore{root}{3.5,0*\layersep} \draw (root t) -- (fpga.south);
+	
+	% Layer 1
+	\neurocore{l}{0+1.5,1*\layersep} \draw (l t) -- (root l);
+	\neurocore{r}{4+1.5,1*\layersep} \draw (r t) -- (root r);
+	
+	% Layer 2
+	\neurocore{ll}{0+0.5,2*\layersep} \draw (ll t) -- (l l);
+	\neurocore{lr}{2+0.5,2*\layersep} \draw (lr t) -- (l r);
+	\neurocore{rl}{4+0.5,2*\layersep} \draw (rl t) -- (r l);
+	\neurocore{rr}{6+0.5,2*\layersep} \draw (rr t) -- (r r);
+	
+	% Layer 3
+	\neurocore{lll}{0,3*\layersep} \draw (lll t) -- (ll l);
+	\neurocore{llr}{1,3*\layersep} \draw (llr t) -- (ll r);
+	\neurocore{lrl}{2,3*\layersep} \draw (lrl t) -- (lr l);
+	\neurocore{lrr}{3,3*\layersep} \draw (lrr t) -- (lr r);
+	\neurocore{rll}{4,3*\layersep} \draw (rll t) -- (rl l);
+	\neurocore{rlr}{5,3*\layersep} \draw (rlr t) -- (rl r);
+	\neurocore{rrl}{6,3*\layersep} \draw (rrl t) -- (rr l);
+	\neurocore{rrr}{7,3*\layersep} \draw (rrr t) -- (rr r);
+	
+	% Layer 4
+	\neurocore{rrrr}{7,4*\layersep} \draw (rrrr t) -- (rrr r);
+	
+	% USB
+	\node (usb) at (3, 4*\layersep)
+	      [ draw, rectangle
+	      , inner sep=0.1cm
+	      , minimum width =\chipsize
+	      , minimum height=\chipsize
+	      ]
+	      {\footnotesize{}USB Interface};
+	\draw (usb.north) -- (lrr r);
+	
+\end{tikzpicture}
+
