@@ -553,24 +553,6 @@
 			
 			\subsubsection{Neurogrid}
 				
-				% Analog, simple neural models, limited local analog spike communication
-				% possible, digital interconnect in a tree allows forwarding of spikes
-				% to neurons on one of 16 chips arbitrarily. To facilitate connection
-				% weights, must use probabilistic spike transmission which uses an FPGA
-				% to lookup weight, roll the die and retransmit spikes into the tree.
-				% Routers are asynchronous and use 1-of-N codes to reduce power and
-				% electrical noise.
-				%
-				% Network is designed to be inherently deadlock free by using a tree,
-				% not achievable for multicast on simple mesh/torus [TODO: verify].
-				% They argue that the tree scales well for multicast because top node
-				% doesn't see most duplicates. In particular, they argue that for
-				% all-to-all (as a worst case) the top of the tree relays n packets when
-				% using multicast (rather than n^2 if using unicast). In a mesh being
-				% used in *unicast* mode to avoid deadlock, each node relays n^{3/2}
-				% packets which is clearly worse. Also trees have larger diameter and
-				% thus higher latency.
-				
 				\begin{figure}
 					\begin{subfigure}[b]{0.39\textwidth}
 						\center
@@ -652,16 +634,69 @@
 			% Use digital implementations of neurons, typically optimised in some
 			% fashion.
 			
+			To avoid the difficulties which plague analogue systems, a number of
+			researchers have constructed special purpose digital neuron models
+			\cite{prange93,jahnke96,schoenauer99,mehrtash03}. Though more power
+			efficient and potentially much faster than similar software models, these
+			designs are inherently tied to a single neural model.
+			
+			Thanks to the continued gains in power efficiency and speed made by more
+			general purpose digital platforms such as CPUs, GPUs and FPGAs, the
+			current generation of digital simulators is dominated by these more
+			flexible platforms. These platforms go from most flexible and highest
+			overhead to least flexible but most efficient respectively.  The mature
+			FPGA-based Bluehive and CPU-based SpiNNaker systems are described below to
+			give an overview of the state of current digital simulator technology.
+			
 			\subsubsection{Bluehive}
 				
-				% FPGA based, custom high-speed-serial interconnect, same link tech as
-				% super computers, 3D torus network. Spike duplicated for all
-				% destinations.
+				The Bluehive system connects up to 64 high-end Altera Stratix IV FPGAs,
+				each simulating up to 64,000 neurons with 1,000 synapses each
+				\cite{moore12}. Unlike the analogue systems and a number of the fixed
+				digital systems which simulate all their neurons in parallel, Bluehive
+				multiplexes them four-at-a-time taking advantage of high speed FPGA
+				logic.
+				
+				The neuron models have been implemented within the Bluehive FPGAs both
+				as custom, special purpose hardware and also as conventional C code for
+				a custom vector processor (BlueVec) implemented within the FPGA logic.
+				Both techniques flexibly allow new neuron models to be implemented
+				though with differing levels of speed and development effort. For the
+				same neuron model, a C (software) implementation running on BlueVec
+				required an order of magnitude less code than the custom hardware
+				implementation yet only performed at half the speed.
+				
+				The FPGAs are interconnected in a 3D torus ($k$-ary 3-cube) using
+				electrical high-speed serial links. These links use of a custom protocol
+				which allows spikes to be reliably multicast to multiple FPGAs,
+				automatically making use alternative connections if a cable is damaged
+				or unplugged.
+				
+				Each of the six bidirectional links are operated at 6 Gbit/s per
+				direction and remain powered on in order to ensure low latency
+				communication between FPGAs. In practice, each is only loaded with about
+				250 MBit/s of traffic which helps reduce congestion in the network and
+				thus enable lower latencies.
+				
+				% TODO: Awaiting some details from Theo about the network.
 			
 			\subsubsection{SpiNNaker}
 				
 				% CPU based, custom asynchronous multicast interconnect but scaling up
 				% with high-speed serial 2D hexagonal torus network.
+				
+				The SpiNNaker architecture consists of a network of up to one million
+				low-power mobile-phone grade ARM processors principally interconnected
+				using a custom asynchronous network \cite{furber06}. The use of general
+				purpose processors allows a great degree of flexibility in the neuron
+				implementation at the cost of energy efficiency.
+				
+				As in Bluehive, each processor core in SpiNNaker is responsible for a
+				number of neurons with a target of 1,000 neurons per core each with
+				1,000 synapses. Eighteen ARM cores are combined onto a single SpiNNaker
+				chip and these chips interconnect in a 2D hexagonal mesh topology.
+				SpiNNaker's interconnection network is described in detail in the
+				following section and forms the basis of current preliminary work.
 	
 	
 	\section{SpiNNaker network architecture}
