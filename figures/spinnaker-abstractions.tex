@@ -3,10 +3,12 @@
 	\pgfmathsetlengthmacro{\sep}{2.5em}
 	
 	\pgfmathsetlengthmacro{\labelsep}{0.5em}
-	\tikzset{label/.style={ font=\footnotesize
+	\tikzset{widelabel/.style={ font=\footnotesize
 	                      , align=center
-	                      , text width=3cm
 	                      , inner sep=0
+	                      }}
+	\tikzset{label/.style={ widelabel
+	                      , text width=3cm
 	                      }}
 	
 	
@@ -89,6 +91,8 @@
 	\node [above=\labelsep of die, label] {18 cores \\ per chip.};
 	\node [above=\labelsep of board, label] {48 chips \\ per board.};
 	\node [above=\labelsep of rack, label] {24 boards \\ per rack.};
+	\node [below=\labelsep of cabinet, widelabel] {5 racks per cabinet, 10
+	cabinets.};
 	
 \end{tikzpicture}
 
