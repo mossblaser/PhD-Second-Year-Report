@@ -475,15 +475,16 @@
 			
 			\subsubsection{BrainScaleS}
 				
-				% Whole silicon wafer: extremely fast, extremely low power. Rather hard
-				% to calibrate. Fair amount of flexibility in neuron model.
-				%
-				% Two interconnection systems: L1 and L2. L1 is circuit switched mesh
-				% for low-power, low-latency connections, but very inflexible. L2 uses
-				% FPGAs to translate into 10 gigabit Ethernet or other links. More
-				% flexible and allows some scaling. Spikes multicast.
-				%
-				% Difficult to scale.
+				% TODO: Include photograph
+				\begin{figure}
+					\center
+					\includegraphics[width=0.5\textwidth]{figures/brainscales}
+					
+					\caption[The BrainScaleS wafer-scale system.]{The BrainScaleS
+					wafer-scale system (right) alongside its supporting conventional PC cluster.}
+					
+					\label{fig:brainscales}
+				\end{figure}
 				
 				The BrainScaleS project makes use of wafer-scale integration where, in
 				essence, multiple `chips' (reticles) are produced and wired together
@@ -552,6 +553,15 @@
 				data as found in super computers.
 			
 			\subsubsection{Neurogrid}
+				
+				% TODO: Include photograph
+				\begin{figure}
+					\center
+					\includegraphics[width=0.4\textwidth]{figures/neurogrid}
+					
+					\caption{A 16 chip Nerogrid system.}
+					\label{fig:neurogrid}
+				\end{figure}
 				
 				\begin{figure}
 					\begin{subfigure}[b]{0.39\textwidth}
@@ -650,6 +660,15 @@
 			
 			\subsubsection{Bluehive}
 				
+				% TODO: Include photograph
+				\begin{figure}
+					\center
+					\includegraphics[width=0.4\textwidth]{figures/bluehive}
+					
+					\caption{A 16 FPGA Bluehive system.}
+					\label{fig:bluehive}
+				\end{figure}
+				
 				The Bluehive system connects up to 64 high-end Altera Stratix IV FPGAs,
 				each simulating up to 64,000 neurons with 1,000 synapses each
 				\cite{moore12}. Unlike the analogue systems and a number of the fixed
@@ -685,6 +704,14 @@
 				% CPU based, custom asynchronous multicast interconnect but scaling up
 				% with high-speed serial 2D hexagonal torus network.
 				
+				% TODO: Refer to this in text.
+				\begin{figure}
+					\input{figures/spinnaker-abstractions}
+					
+					\caption{SpiNNaker hardware abstractions.}
+					\label{fig:spinnaker-abstractions}
+				\end{figure}
+				
 				The SpiNNaker architecture consists of a network of up to one million
 				low-power mobile-phone grade ARM processors principally interconnected
 				using a custom asynchronous network \cite{furber06}. The use of general
@@ -693,11 +720,19 @@
 				
 				As in Bluehive, each processor core in SpiNNaker is responsible for a
 				number of neurons with a target of 1,000 neurons per core each with
-				1,000 synapses. Eighteen ARM cores are combined onto a single SpiNNaker
-				chip and these chips interconnect in a 2D hexagonal mesh topology.
+				1,000 synapses. As shown in figure \ref{fig:spinnaker-abstractions},
+				eighteen ARM cores are combined onto a single SpiNNaker chip. These
+				chips are grouped into boards which are assembled into racks which
+				finally make up a machine with 1,036,800 cores capable of simulating
+				around 1 bilion neurons in biological real time.
+				
+				The system uses a 2D hexagonal torus topology and a combination of
+				custom asynchronous interconnect between individual processor cores and
+				chips on the same circuit board (as in Neurogrid) and high-speed serial
+				(as in Bluehive) between boards.
+				
 				SpiNNaker's interconnection network is described in detail in the
 				following section and forms the basis of current preliminary work.
-	
 	
 	\section{SpiNNaker network architecture}
 		\label{sec:spinnaker}
@@ -706,6 +741,11 @@
 		%
 		% Overview of system: cores, chips, boards, racks, cabinets. Network is
 		% hexagonal torus with nodes being chips.
+		
+		This section takes a more detailed look at SpiNNaker's network architecture
+		since it is the focus of current preliminary work.
+		
+		The SpiNNaker architecture 
 		
 		\subsection{Routing \& multicast}
 			
