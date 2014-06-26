@@ -742,10 +742,8 @@
 		% Overview of system: cores, chips, boards, racks, cabinets. Network is
 		% hexagonal torus with nodes being chips.
 		
-		This section takes a more detailed look at SpiNNaker's network architecture
-		since it is the focus of current preliminary work.
-		
-		The SpiNNaker architecture 
+		This section gives a more detailed overview of SpiNNaker's network
+		architecture which forms the focus of current preliminary work.
 		
 		\subsection{Routing \& multicast}
 			
@@ -767,24 +765,156 @@
 		% Technology now used by most super computers and high-speed comms tasks.
 		% More complex than parallel but they scale up throughput better.
 		
-		\subsection{Eliminating skew}
+		\begin{figure}
+			\begin{subfigure}{0.48\textwidth}
+				\center
+				\begin{tikzpicture}[thick, node distance=0.2cm, xscale=0.40]
+					\input{figures/parallel-example}
+					\input{|"python figures/parallel_example.py 'Hello, World!' 0.0"}
+					
+				\end{tikzpicture}
+				
+				\caption{No skew.}
+				\label{fig:parcons-no-skew}
+			\end{subfigure}
+			\begin{subfigure}{0.48\textwidth}
+				\center
+				\begin{tikzpicture}[thick, node distance=0.2cm, xscale=0.40]
+					\input{figures/parallel-example}
+					\input{|"python figures/parallel_example.py 'Hello, World!' 0.7"}
+					
+				\end{tikzpicture}
+				
+				\caption{With skew.}
+				\label{fig:parcons-with-skew}
+			\end{subfigure}
 			
-			% Parallel vs Serial, problems with parallel.
+			\caption[Parallel signalling example.]{Example of parallel data
+			transmission. Eight bits are transferred each cycle and the value of the
+			signals sampled at the point indicated by the faint line. As skew is
+			introduced, errors appear.}
+			\label{fig:parcons} \end{figure}
+		
+		Traditionally, digital links within computers have relied on parallel
+		signalling where a `word' consisting of multiple bits is transmitted
+		simultaneously each clock tick (figure \ref{fig:parcons-no-skew}). This
+		mechanism is popular because it is extremely simple and allows easy scaling
+		of performance by simply increasing the number of bits within in a word.
+		
+		Unfortunately, as the speed at which devices run increases, the assumption
+		that the relative times taken for signals to propagate down different copper
+		wires is insignificant has fallen apart. This problem, known as skew, means
+		that a receiver may erroneously receive bits from two different words
+		resulting in an error (figure \ref{fig:parcons-with-skew}). Though skew can
+		be minimised by matching the quality and lengths of the wires used, this
+		does not scale well. Serial signalling by contrast only transmits one bit
+		at a time thus avoiding skew related issues.
+		
+		In addition, serial signalling reduces the number of physical wires required
+		to transmit data. Since the number of connections required by a chip or
+		circuit board can have a large influence on cost, this factor alone may make
+		serial a necessary choice.
+		
+		While low-speed serial signalling techniques such as RS232 can be extremely
+		simple, at higher speeds matters become more complex. This section describes
+		a number of the techniques employed by high-speed serial links and their
+		implications for interconnection networks. A more detailed summary of HSS
+		technology is available from Athavale \emph{et. al.} \cite{athavale05}.
 		
 		\subsection{Clock recovery}
 			
 			% Requires frequent transitions (e.g. using 8b/10b) even on idle line,
 			% makes idling expensive.
+			
+			Since serial signals can only transmit a single bit per clock cycle, to
+			achieve high bandwidths HSS links typically operate at multiple gigahertz.
+			Transmitting this clock signal alongside the data would require a large
+			amount of power and be electrically challenging to connect due to the need
+			to minimise skew between the data and clock signals.
+			
+			An alternative to transmitting the clock signal is to extract the clock
+			from the data stream itself. This is typically done using a Phase-Locked
+			Loop (PLL) which can derive a clock signal from an incoming data stream if
+			the data features frequent enough transitions between 0 and 1. To
+			guarantee this, data sent down the link must be encoded using a scheme
+			such as 8b/10b coding \cite{widmer83} which translates arbitrary eight bit
+			values and encodes these at ten bit sequences with guaranteed frequent
+			transitions.
+			
+			The need for frequent transitions also implies that the link must
+			constantly transmit a value in order for the PLL to reliably reproduce the
+			clock used. Further, it takes some time for a PLL to lock onto the clock
+			used by an incoming stream of data. These properties can have a
+			significant impact on the power consumption of serial links over which low
+			latency communication is required.
 		
 		\subsection{Clock correction}
 			
-			% Requires buffering clock/correction to deal with clock differences.
+			High-speed serial links are typically designed to allow communication
+			between two independent components each using their own independent clock
+			sources to transmit data. This causes problems since no two clocks run at
+			exactly the same speed meaning that a faster device will send slightly
+			more data than the slower device can handle. For a clock with with an
+			error of 100 Parts Per Million (PPM), this means that in the worst case in
+			the time it takes a fast device to transmit 10,001 bits, a slow device
+			would only be able to process 9,999 bits.
+			
+			Though a receiver is able to derive the clock used by the sender, this
+			clock is typically only used to place the data from the incoming serial
+			steam into a FIFO buffer. Data placed in this buffer is then read by the
+			receiving system using its own clock. Unfortunately, this buffer will
+			inevitably overflow or underflow depending on the relative speed of the
+			sender's clock.
+			
+			One of the additional features provided by 8b/10b coding is the provision
+			of a number `out-of-band' codes, known as K-characters, which do not
+			correspond to any eight bit sequence. To avoid buffer under/overflow,
+			senders periodically insert a `skip sequence' of a number of K-characters.
+			If the receiver's clock is running slower than the sender's, its buffer
+			will gradually fill up. If the buffer fills beyond a high-water mark, the
+			receiver will drop any skip sequences it receives allowing it to catch up
+			and the buffer to empty. Conversely, if the receiver is faster than the
+			sender, its buffer will gradually empty.  If a low-water mark is passed,
+			the receiver may duplicate any skip sequences in its buffer.
+			
+			As a result of this behaviour, a certain amount of buffering is required
+			by HSS systems which contributes to the chip area requirements and latency
+			involved in traversing a link.
 		
 		\subsection{Error recovery}
 			
-			% Must retransmit packets with errors. Requires buffers.
+			No link technology is perfectly reliable however high speed serial links
+			are particularly susceptible to occasional bit errors due to the extremely
+			high speeds at which they operate. As a result, an error detection and
+			recovery mechanism is required to ensure reliable delivery of data.
+			
+			In noisy communication systems such as wireless networks where bit errors
+			are frequent forward error correction (FEC) is used which redundantly
+			encodes data such that it is still recoverable in the presence of errors.
+			HSS links are typically far less noisy and thus errors are comparatively
+			rare.  In order to avoid the significant communication and computation
+			overhead involved in FEC, HSS links typically use a checksum to detect the
+			validity of arriving data and a resend mechanism when corrupted data
+			arrives.
+			
+			Resend mechanisms require that senders retain copies of data due to be
+			sent over a link until it is acknowledged as successfully received by the
+			receiver. The number of packets which must be retained is determined by
+			the frequency with which acknowledgements are set. This in turn is a
+			decision which adds overhead through the insertion of acknowledgements.
+			These overheads are far less significant than those added by FEC when the
+			number of errors is low.
+			
+			Retransmission does, however, add significantly to the latency cost of
+			errors since a round-trip delay is incurred while a negative
+			acknowledgement is sent by the receiver and processed by the original
+			sender.
 		
 		\subsection{Flow control}
 			
-			% Now unlimited amounts of data can be sent so must have way of applying
-			% back-pressure. Again, means more buffering and complexity.
+			Finally, due to the amount of buffering required for a HSS link, flow
+			control cannot be as simple as a handshaking mechanism where blocks of
+			data are individually acknowledged or blocked since these signals would
+			take too long to arrive. As a result, more sophisticated schemes such as
+			credit based flow control \cite{dally04} may be used. These mechanisms
+			introduce additional complexity and buffering.

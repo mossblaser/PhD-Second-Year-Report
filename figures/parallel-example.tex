@@ -1,0 +1,45 @@
+% #1: Name of waveform
+% #2: Text label for waveform
+% #3: Style (e.g. below=of) of waveform
+% #4: List of waveform values
+% #5: Offset
+\newcommand{\waveform}[5]{
+	% Label
+	\node (#1) [#3] {#2};
+	
+	% Draw the leading line
+	\draw (#1.east) -- ++(#5,0)
+	      coordinate (last wave point)
+	      ;
+	
+	% Draw the waveform
+	\foreach [count=\i] \bit in {#4}{
+		
+		\ifthenelse{\equal{\bit}{1}}{
+			\draw let \p1=(last wave point)
+			        , \p2=(#1.north east)
+			   in (last wave point)
+			   -- (\x1,\y2)
+			   -- ++(1,0)
+			      coordinate (last wave point)
+			      ;
+		}{
+			\draw let \p1=(last wave point)
+			        , \p2=(#1.south east)
+			   in (last wave point)
+			   -- (\x1,\y2)
+			   -- ++(1,0)
+			      coordinate (last wave point)
+			      ;
+		}
+	}
+	
+	% Finish the line
+	\draw let \p1=(last wave point)
+	        , \p2=(#1.east)
+	   in (last wave point)
+	   -- (\x1,\y2)
+	   -- ++(2-#5,0)
+	      coordinate (last wave point)
+	      ;
+}
