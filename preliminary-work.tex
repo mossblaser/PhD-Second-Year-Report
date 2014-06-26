@@ -3,18 +3,22 @@
 	
 	% TODO: Add more linking together perhaps?
 	
-	The preliminary work outlined in this chapter has concentrated on developing a
-	fuller understanding of the interconnection networks used in SpiNNaker. The
-	chapter begins with work to develop a technique for positioning SpiNNaker
-	boards in a system such that wires between them were kept short enough to
-	allow the use of electrical connections. This was then extended to examine the
-	possibility of augmenting SpiNNaker's board-to-board connections to form a
-	small-world network boasting reduced latency at little added cost. This is
-	followed with an overview of work done to accurately model SpiNNaker's
-	interconnection network. The chapter concludes with a discussion of progress
-	made towards extending SpiNNaker's high-speed board-to-board links to support
-	connection of both peripherals and other connection topologies (e.g. small
-	world).
+	The preliminary work outlined in this chapter initially concentrates on
+	developing a fuller understanding of the characteristics of the
+	interconnection networks used in SpiNNaker. This work has developed into the
+	foundations for new extensions to the SpiNNaker network which will form the
+	main contributions of this project.
+	
+	The chapter begins with the development of an efficient wiring scheme for
+	large SpiNNaker systems which accounts for the properties of the interconnect
+	technology. This is followed by a discussion of an extension to the network
+	which exploits the suggested wiring scheme to inexpensively transform the
+	network into a small world network with improved latency.  As part of an
+	effort to validate potential changes to the network, a model of SpiNNaker's
+	interconnection network has been built. A brief description of this work is
+	included along with details of collaborative work to develop new modelling
+	techniques.  The chapter concludes with an outline of extensions being made to
+	the existing HSS board-to-board links within SpiNNaker.
 	
 	\section{SpiNNaker machine wiring}
 		
