@@ -1,0 +1,81 @@
+\begin{tikzpicture}[thick]
+	\def\twoofsevenheight{1.0em}
+	\def\twoofsevensep{1.5em}
+	
+	\def\bordersep{1.0em}
+	
+	% 2-of-7 link handlers
+	\foreach \row in {0,...,7}{
+		\node [ draw
+		      , rectangle
+		      , yshift=\row*\twoofsevensep
+		      , inner sep=0.3em
+		      , minimum height=\twoofsevenheight
+		      ]
+		      (two of seven \row)
+		      {\tiny{2 of 7}};
+	}
+	
+	% Framing block
+	\node [ draw
+	      , rectangle
+	      , right=of $(two of seven 0.east)!0.5!(two of seven 7.east)$
+	      , minimum height = 7*\twoofsevensep + \twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (framing)
+	      {Framing and Reliability};
+
+	% Links from 2-of-7 to framing
+	\foreach \row in {0,...,7}{
+		\draw [<->]
+		      (two of seven \row.east)
+		   -- (two of seven \row.east -| framing.west)
+		    ;
+	}
+	
+	% Links from 2-of-7 to chips
+	\foreach \row in {0,...,7}{
+		\draw [<->]
+		      (two of seven \row.west)
+		   -- ++(-1cm,0) coordinate (two of seven wire \row)
+		    ;
+	}
+	
+	% GTP
+	\node [ draw
+	      , rectangle
+	      , right=of framing
+	      , minimum height = 7*\twoofsevensep + \twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (gtp)
+	      {Gigabit Transceiver\\(Hard IP)};
+	
+	% Framing to/from GTP wires
+	\draw [<->] (framing.east) -- (gtp.west);
+	
+	% Gigabit links
+	\draw [<->] (gtp.east) -- ++(1cm,0) coordinate (gtp wire);
+	
+	% FPGA Border
+	\draw ([shift={(-\bordersep,-\bordersep)}]two of seven 0.south west)
+	      rectangle
+	      ([shift={( \bordersep, \bordersep)}]gtp.north east);
+	
+	% Chip label
+	\node [ left=0 of $(two of seven wire 0)!0.5!(two of seven wire 7)$
+	      , rotate=90
+	      , anchor=south
+	      ]
+	      {SpiNNaker Chip Links};
+	
+	% HSS link label
+	\node [ right=0 of gtp wire
+	      , rotate=90
+	      , anchor=north
+	      ]
+	      {S-ATA connector};
+\end{tikzpicture}

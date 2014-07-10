@@ -1,0 +1,248 @@
+\begin{tikzpicture}[thick,remember picture,font=\small]
+	
+	\def\arbwidth{0.3cm}
+	\def\arbheight{0.7cm}
+	\def\arboffset{0.15cm}
+	
+	% An arbiter. Arguments:
+	% 1: Name
+	% 2: Node args
+	% 3: Draw style
+	\newcommand{\arb}[3]{
+		\node (#1)
+		      [minimum width=\arbwidth,minimum height=\arbheight, inner sep=0,#2]
+		      {}
+		      ;
+		
+		\coordinate (#1 in 1) at ($(#1.south west)!0.75!(#1.north west)$);
+		\coordinate (#1 in 2) at ($(#1.south west)!0.25!(#1.north west)$);
+		\coordinate (#1 out)  at (#1.east);
+		
+		\draw [#3]
+		      (#1.south west)
+		   -- (#1.north west)
+		   -- ([yshift=-\arboffset]#1.north east)
+		   -- ([yshift=\arboffset]#1.south east)
+		   -- cycle
+		      ;
+	}
+	
+	% A buffer. Arguments:
+	% 1: Name
+	% 2: Node args
+	% 3: Draw style
+	% 4: Number of slots x
+	% 5: Number of slots y
+	\newcommand{\buf}[5]{
+		\pgfmathsetlengthmacro{\bufsize}{0.2cm}
+		\pgfmathsetlengthmacro{\width}{sqrt(#4)*\bufsize}
+		\pgfmathsetlengthmacro{\height}{sqrt(#5)*\bufsize}
+		\node (#1)
+		      [ draw
+		      , minimum width=\width
+		      , minimum height=\height
+		      , inner sep=0
+		      , #2
+		      , #3
+		      ] { };
+		
+		% Draw Lines on buffers to indicate number of slots
+		\foreach \x in {1,...,#4}{
+			\ifthenelse{\not\equal{\x}{#4}}{
+				\pgfmathsetmacro{\xx}{\x/#4}
+				\draw [#3] ($(#1.south west)!\xx!(#1.south east)$)
+				        -- ($(#1.north west)!\xx!(#1.north east)$);
+			}{}
+		}
+		\foreach \y in {1,...,#5}{
+			\ifthenelse{\not\equal{\y}{#5}}{
+				\pgfmathsetmacro{\yy}{\y/#5}
+				\draw [#3] ($(#1.south west)!\yy!(#1.north west)$)
+				        -- ($(#1.south east)!\yy!(#1.north east)$);
+			}{}
+		}
+		
+		\coordinate (#1 in)  at (#1.west);
+		\coordinate (#1 out) at (#1.east);
+	}
+	
+	% A buffer-arbiter pair. Arguments:
+	% 1: Name
+	% 2: Arbiter node args
+	% 3: Draw style
+	% 4: Number of buffer slots x
+	% 5: Number of buffer slots y
+	\newcommand{\arbbuf}[5]{
+		\arb{#1 arb}{#2}{#3}
+		\buf{#1 buf}{right=\arbbufgap of #1 arb}{#3}{#4}{#5}
+		\draw [#3] (#1 arb out) -- (#1 buf in);
+	}
+	
+	% Draw a line with two bends. Arguments:
+	% 1: Start
+	% 2: End
+	% 3: Draw style
+	% 4: Bend 1 style
+	% 5: Bend 2 style
+	\newcommand{\drawbent}[5]{
+		\draw [#3] (#1) #4 ($(#1)!0.5!(#2)$) #5 (#2);
+	}
+	
+	\def\arbbufgap{0.1cm}
+	\def\arbvgap{0.1cm}
+	\def\arbhgap{0.4cm}
+	
+	\def\routerhgap{0.5cm}
+	
+	% Output Buffers. Arguments:
+	% 1: Output name
+	% 2: Line first bend y offset
+	% 3: Line first bend x offset
+	\newcommand{\outbuf}[3]{
+		\path let \p1=(#1 buf in), \p2=([xshift=0.5*\routerhgap]router.east) in (\x2,\y1) coordinate (#1 out);
+		\buf{#1 out buf}{right=\routerhgap of #1 out}{}{2}{1}
+		\draw ($(router.north east)!#2!(router.south east)$)
+		   -- ++(#3,0)
+		   |- (#1 out buf)
+		      ;
+	}
+	
+	\def\packetgenvgap{0.6cm}
+	
+	% The node itself
+	\node (model) [draw, rectangle, inner sep=0.25cm] {
+		\begin{tikzpicture}[thick,remember picture]
+			% Level 2
+			\arbbuf{e ne}{}{}{1}{1}
+			\buf{e  buf}{left=\arbbufgap of e ne arb in 1}{}{2}{1} \draw (e  buf) -- (e ne arb in 1);
+			\buf{ne buf}{left=\arbbufgap of e ne arb in 2}{}{2}{1} \draw (ne buf) -- (e ne arb in 2);
+			
+			\arbbuf{n w}{below=\arbvgap of  e ne arb}{}{1}{1}
+			\buf{n buf}{left=\arbbufgap of n w arb in 1}{}{2}{1} \draw (n buf) -- (n w arb in 1);
+			\buf{w buf}{left=\arbbufgap of n w arb in 2}{}{2}{1} \draw (w buf) -- (n w arb in 2);
+			\arbbuf{sw s}{below=\arbvgap of n w arb}{}{1}{1}
+			\buf{sw buf}{left=\arbbufgap of sw s arb in 1}{}{2}{1} \draw (sw buf) -- (sw s arb in 1);
+			\buf{s  buf}{left=\arbbufgap of sw s arb in 2}{}{2}{1} \draw (s  buf) -- (sw s arb in 2);
+			\arbbuf{proc}{below=\arbvgap of sw s arb}{draw=white}{1}{1}
+			
+			% Level 1
+			\arbbuf{e ne n w}{right=\arbhgap of $(e ne buf)!0.5!(n w buf)$}{}{1}{1}
+			\drawbent{e ne buf out}{e ne n w arb in 1}{}{-|}{|-}
+			\drawbent{n w buf out}{e ne n w arb in 2}{}{-|}{|-}
+			\arbbuf{sw s proc}{right=\arbhgap of $(sw s buf)!0.5!(proc buf)$}{}{1}{1}
+			\drawbent{sw s buf out}{sw s proc arb in 1}{}{-|}{|-}
+			\coordinate (proc in) at  (sw s proc arb in 2);
+			
+			% Level 0 (root)
+			\arbbuf{root}{right=\arbhgap of $(e ne n w buf)!0.5!(sw s proc buf)$}{}{2}{1}
+			\drawbent{e ne n w buf out}{root arb in 1}{}{-|}{|-}
+			\drawbent{sw s proc buf out}{root arb in 2}{}{-|}{|-}
+			
+			% Router
+			\def\routerstages{4}
+			\node (router)
+			      [inner ysep=0.5cm,inner xsep=1em,draw, rectangle, right=\arbbufgap of root buf out]
+			      {Router}
+			      ;
+			\draw (root buf out) -- (router.west);
+			
+			% Router pipeline stage divisions
+			\begin{scope}
+				\clip       ($(router.south west)!0.0!(router.north west)$)
+				  rectangle ($(router.south east)!0.2!(router.north east)$)
+				            ($(router.south west)!0.8!(router.north west)$)
+				  rectangle ($(router.south east)!1.0!(router.north east)$)
+				  ;
+				
+				\foreach \x in {2,...,\routerstages}{
+					\pgfmathsetmacro{\xx}{(\x-1)/\routerstages}
+					\draw  ($(router.south west)!\xx!(router.south east)$)
+					    -- ($(router.north west)!\xx!(router.north east)$);
+				}
+			\end{scope}
+			
+			\outbuf{e}{ 0.2}{0.3*\routerhgap + 0.1cm}
+			\outbuf{ne}{0.3}{0.3*\routerhgap + 0.2cm}
+			\outbuf{n}{ 0.4}{0.3*\routerhgap + 0.3cm}
+			\outbuf{w}{ 0.5}{0.3*\routerhgap + 0.4cm}
+			\outbuf{sw}{0.6}{0.3*\routerhgap + 0.3cm}
+			\outbuf{s}{ 0.7}{0.3*\routerhgap + 0.2cm}
+			
+			% Packet Generator
+			\node (packet gen)
+			      [below=\packetgenvgap of sw s proc arb in 2, xshift=-0.5*\arbhgap]
+			      [draw, rectangle, text width = 2cm, align=center, inner sep=0.2cm]
+			      {Packet Generator}
+			    ;
+			
+			\buf{packet gen buf}{above=\arbbufgap of packet gen.north}{}{1}{2}
+			\draw (packet gen buf.north) |- (sw s proc arb in 2);
+			\draw (packet gen.north) -- (packet gen buf.south);
+			
+			% Packet Consumer
+			\path let \p1=(router.south)
+			        , \p2=(packet gen.north)
+			      in coordinate (packet con north) at (\x1,\y2);
+			\node (packet con)
+			      [below=0 of packet con north,xshift=0.7cm]
+			      [draw, rectangle, text width = 2cm, align=center, inner sep=0.2cm]
+			      {Packet Consumer}
+			    ;
+			\draw ($(router.north east)!0.8!(router.south east)$)
+			   -- ++(0.3*\routerhgap + 0.1cm, 0)
+			      coordinate (packet con router output)
+			    ;
+			\path let \p1=(packet con router output)
+			        , \p2=(packet con.north)
+			      in coordinate (packet con input) at (\x1,\y2);
+			\buf{packet con buf}{above=\arbbufgap of packet con input}{}{1}{2}
+			\draw (packet con input) -- (packet con buf.south);
+			\draw (packet con router output) -- (packet con buf.north);
+			
+		\end{tikzpicture}
+	};
+	
+	
+	\def\keyentrygap{1.5em}
+	\def\keylabelgap{0.3cm}
+	
+	% The Key
+	\node [below=0.5cm of model, inner sep=0] {
+		\begin{tikzpicture}[thick,remember picture]
+			
+			\arb{key arb}{}{}
+			\node (key arb label) [right=\keylabelgap of key arb] {Round-Robin Arbiter};
+			
+			\buf{key buf}{right=\keyentrygap of key arb label}{}{1}{1}
+			\node (key buf label) [right=\keylabelgap of key buf] {Buffer};
+			
+			\node [left=\keyentrygap of key arb] {Key:};
+		\end{tikzpicture}
+	};
+	
+	
+	\def\inpindist{0.75cm}
+	\def\outpindist{0.8cm}
+	
+	% XXX: Note that the text here differs from the labelling used internally.
+	% This is due to the fact that the original assignment was discovered to be
+	% erroneuous and just correcting the text was easier than replacing
+	% everything.
+	
+	% Input pins
+	\draw (e  buf in) -- ++(-\inpindist,0) node [left] {E};
+	\draw (ne buf in) -- ++(-\inpindist,0) node [left] {S};
+	\draw (n  buf in) -- ++(-\inpindist,0) node [left] {NE};
+	\draw (w  buf in) -- ++(-\inpindist,0) node [left] {N};
+	\draw (sw buf in) -- ++(-\inpindist,0) node [left] {W};
+	\draw (s  buf in) -- ++(-\inpindist,0) node [left] {SW};
+	
+	% Output pins
+	\draw (e  out buf out) -- ++(\outpindist,0) node [right] {E};
+	\draw (ne out buf out) -- ++(\outpindist,0) node [right] {S};
+	\draw (n  out buf out) -- ++(\outpindist,0) node [right] {NE};
+	\draw (w  out buf out) -- ++(\outpindist,0) node [right] {N};
+	\draw (sw out buf out) -- ++(\outpindist,0) node [right] {W};
+	\draw (s  out buf out) -- ++(\outpindist,0) node [right] {SW};
+	
+\end{tikzpicture}

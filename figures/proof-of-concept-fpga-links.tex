@@ -1,0 +1,221 @@
+\begin{tikzpicture}[thick]
+	\def\twoofsevenheight{1.0em}
+	\def\twoofsevensep{1.5em}
+	
+	\def\bordersep{1.0em}
+	
+	% Router
+	\node [ draw
+	      , rectangle
+	      , anchor=north west
+	      , minimum height = 1cm + 7*\twoofsevensep + \twoofsevenheight
+	      , text width=1.5cm
+	      , align=center
+	      ]
+	      (router)
+	      {Router};
+	
+	% Framing blocks
+	\node [ draw
+	      , rectangle
+	      , right=of router.north east
+	      , anchor = north west
+	      , minimum height = 3.5*\twoofsevensep + 0.5*\twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (framing)
+	      {Framing and Reliability};
+	\node [ draw
+	      , rectangle
+	      , below=of framing
+	      , minimum height = 3.5*\twoofsevensep + 0.5*\twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (framing periph)
+	      {Framing and Reliability};
+	
+	% 2-of-7 link handlers
+	\foreach \row [count=\i from 0] in {-3.5,...,3.5}{
+		\node [ draw
+		      , rectangle
+		      , yshift=\row*\twoofsevensep
+		      , inner sep=0.3em
+		      , minimum height=\twoofsevenheight
+		      , left= of router.west
+		      ]
+		      (two of seven \i)
+		      {\tiny{2 of 7}};
+	}
+
+	% Links from 2-of-7 to router
+	\foreach \row in {0,...,7}{
+		\draw [<->]
+		      (two of seven \row.east)
+		   -- (two of seven \row.east -| router.west)
+		    ;
+	}
+
+	% Links from router to b2b framing
+	\foreach \row in {-3.5,...,3.5}{
+		\draw [<->]
+		      ([yshift=-0.7em*\row]framing.west -| router.east)
+		   -- ([yshift=-0.7em*\row]framing.west)
+		    ;
+	}
+	
+	% Links from router to periph framing
+	\foreach \row in {-3.5,...,3.5}{
+		\draw [<->]
+		      ([yshift=-0.7em*\row]framing periph.west -| router.east)
+		   -- ([yshift=-0.7em*\row]framing periph.west)
+		    ;
+	}
+	
+	% Links from 2-of-7 to chips
+	\foreach \row in {0,...,7}{
+		\draw [<->]
+		      (two of seven \row.west)
+		   -- ++(-1cm,0) coordinate (two of seven wire \row)
+		    ;
+	}
+	
+	% GTPs
+	\node [ draw
+	      , rectangle
+	      , right=of framing
+	      , minimum height = 3.5*\twoofsevensep + 0.5*\twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (gtp)
+	      {Gigabit Transceiver\\(Hard IP)};
+	\node [ draw
+	      , rectangle
+	      , below=of gtp
+	      , minimum height = 3.5*\twoofsevensep + 0.5*\twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (gtp periph)
+	      {Gigabit Transceiver\\(Hard IP)};
+	
+	% Framing to/from GTP wires
+	\draw [<->] (framing.east)        -- (gtp.west);
+	\draw [<->] (framing periph.east) -- (gtp periph.west);
+	
+	% Gigabit links
+	\draw [<->] (gtp.east)        -- ++(1cm,0) coordinate (gtp wire);
+	
+	% FPGA Border
+	\draw ([shift={(-\bordersep, \bordersep)}]router.north -| two of seven 7.west)
+	      rectangle
+	      ([shift={( \bordersep,-\bordersep)}]gtp periph.south east);
+	
+	% Chip label
+	\node [ left=0 of $(two of seven wire 0)!0.5!(two of seven wire 7)$
+	      , rotate=90
+	      , anchor=south
+	      ]
+	      (spinnaker chip links label)
+	      {SpiNNaker Chip Links};
+	
+	% HSS link label
+	\node [ right=0 of gtp wire
+	      , rotate=90
+	      , anchor=north
+	      ]
+	      {Board-to-Board};
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% Peripheral
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	
+	% Framing block
+	\node [ draw
+	      , rectangle
+	      , below=1.5cm of framing periph
+	      , minimum height = 3.5*\twoofsevensep + 0.5*\twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (framing device)
+	      {Framing and Reliability};
+	
+	% UART block
+	\node [ draw
+	      , rectangle
+	      , left = of framing device.south west
+	      , anchor = south east
+	      , minimum height = 1.8em
+	      , text width=1.5cm
+	      , align=center
+	      ]
+	      (uart)
+	      {UART};
+	
+	
+	% Links from UART to b2b framing
+	\foreach \row in {-3.5,...,2.5}{
+		\draw [<->]
+		      ([yshift=-0.7em*\row]framing device.west)
+		   -- ++(-0.5cm,0)
+		      node [xshift=-0.5ex] {$\times$}
+		    ;
+	}
+	\draw [<->]
+	      ([yshift=-0.7em*3.5]framing device.west)
+	   -- ([yshift=-0.7em*3.5]uart.east |- framing device.west)
+	    ;
+	
+	% GTP
+	\node [ draw
+	      , rectangle
+	      , below=1.5cm of gtp periph
+	      , minimum height = 3.5*\twoofsevensep + 0.5*\twoofsevenheight
+	      , text width=2.5cm
+	      , align=center
+	      ]
+	      (gtp device)
+	      {Gigabit Transceiver\\(Hard IP)};
+	
+	% Framing to/from GTP wires
+	\draw [<->] (framing device.east) -- (gtp device.west);
+	
+	% Gigabit links
+	\draw [<->]
+	      (gtp periph.east)
+	   -- ++(1cm,0)
+	   |- (gtp device.east);
+	
+	% FPGA Border
+	\draw ([shift={(-\bordersep, \bordersep)}]uart.west |- framing device.north)
+	      rectangle
+	      ([shift={( \bordersep,-\bordersep)}]gtp device.south east);
+	
+	% Link to USB
+	\draw [<->] (uart.west) -- ++(-1cm,0) coordinate (uart connection);
+	
+	\node [left=0 of uart connection] {Host PC};
+	
+	
+	
+	
+	\draw [decorate,decoration={brace,amplitude=1em,raise=1ex}]
+	      ([shift={(0,-\bordersep)}]spinnaker chip links label.north |- router.south)
+	   -- coordinate (spinnaker label)
+	      ([shift={(0, \bordersep)}]spinnaker chip links label.north |- router.north);
+	
+	\draw [decorate,decoration={brace,amplitude=1em,raise=1ex}]
+	      ([shift={(0,-\bordersep)}]spinnaker chip links label.north |- uart.south)
+	   -- coordinate (periph label)
+	      ([shift={(0, \bordersep)}]spinnaker chip links label.north |- framing device.north);
+	
+	\node [left=1.5em of spinnaker label, rotate=90, anchor=south] {SpiNNaker FPGA};
+	\node [left=1.5em of periph label, rotate=90, anchor=south] {Raggedstone 2};
+	
+	
+\end{tikzpicture}

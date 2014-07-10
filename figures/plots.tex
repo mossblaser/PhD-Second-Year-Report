@@ -1,0 +1,50 @@
+% Commands for producing plots as used in the paper.
+
+% Plot an accepted/dropped packet load graph
+% Arguments:
+%  #1: Number of nodes in the system
+%  #2: Traffic pattern name
+\newcommand{\plotresults}[2]{%
+	\begin{tikzpicture}
+		\newcommand{\width}{0.48\textwidth}
+		\newcommand{\height}{5.5cm}
+		
+		%\selectcolormodel{gray};
+		
+		\begin{axis}[ xlabel=Injection Rate
+		            , ylabel=Accepted Load
+		            , xmin=0, xmax=1
+		            , ymin=0
+		            , width=\width
+		            , height=\height
+		            , yticklabel style = { /pgf/number format/precision=1
+		                                 , /pgf/number format/fixed
+		                                 , /pgf/number format/fixed zerofill
+		                                 }
+		            ]
+			\addplot+ table [x=injection_rate, y=accepted_load] {results/#1_spinnaker_#2.csv};
+			\addplot+ table [x=injection_rate, y=accepted_load] {results/#1_tickysim_#2.csv};
+		\end{axis}
+		
+		\begin{axis}[ xshift=\width+0.2cm
+		            , xlabel=Injection Rate
+		            , ylabel=Dropped Packets
+		            , xmin=0, xmax=1
+		            , ymin=0
+		            , width=\width
+		            , height=\height
+		            %, yticklabel pos=right
+		            , yticklabel style = { /pgf/number format/precision=1
+		                                 , /pgf/number format/fixed
+		                                 , /pgf/number format/fixed zerofill
+		                                 }
+		            , legend pos=south east
+		            , legend entries = { SpiNNaker
+		                               , Tickysim
+		                               }
+		            ]
+			\addplot+ table [x=injection_rate, y=dropped] {results/#1_spinnaker_#2.csv};
+			\addplot+ table [x=injection_rate, y=dropped] {results/#1_tickysim_#2.csv};
+		\end{axis}
+	\end{tikzpicture}%
+}

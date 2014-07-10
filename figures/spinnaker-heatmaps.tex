@@ -1,0 +1,66 @@
+% Comparison of three heatmaps of SpiNNaker's complement traffic pattern.
+\begin{tikzpicture}[baseline]
+	% Produce a single heatmap for comparison of the SpiNNaker complement traffic
+	% pattern.
+	% Arguments:
+	%  #1: The injection rate
+	%  #2: Extra arguments for the axis environment
+	%  #3: Title
+	\newcommand{\spinncomplementheatmap}[3]{
+		\begin{axis}[ xlabel=X
+		            , title={#3}
+		            , title style={align=center}
+		            , axis equal=true
+		            , colorbar style={ ylabel={Packets Dropped}
+		                             , yticklabel pos = left
+		                             , yticklabel style = { /pgf/number format/precision=3
+		                                                  , /pgf/number format/fixed
+		                                                  , /pgf/number format/fixed zerofill
+		                                                  }
+		                             }
+		            , colormap={blackwhite}{rgb=(0,0,0); rgb=(1,1,1)}
+		            , view={0}{90}
+		            , xmin=-0.5, xmax=11.5
+		            , ymin=-0.5, ymax=11.5
+		            , point meta min=0, point meta max=0.018
+		            , xtick={0,3,...,11}
+		            , ytick={0,3,...,11}
+		            , minor tick num=2
+		            , #2
+		            ]
+			\addplot3 [ surf
+			          , shader=flat corner
+			          ] table [ x expr={\thisrow{chip_x}-0.5}
+			                  , y expr={\thisrow{chip_y}-0.5}
+			                  , z expr={\thisrow{dumped} / 1200000}
+			                  ] {results/SpiNNaker_complement_#1.csv}
+			          ;
+			\addplot+ [ no markers
+			          , gray
+			          , ultra thick
+			          ] table {results/threeboard_outline.csv}
+			          ;
+		\end{axis}
+	}
+	
+	\newcommand{\stdwidth}{0.27\textwidth}
+	\newcommand{\stdoffset}{(\stdwidth-0.50cm)}
+	
+	\spinncomplementheatmap{0.10}{ width = \stdwidth
+	                             , height = \stdwidth
+	                             , xshift=0*\stdoffset
+	                             , ylabel=Y
+	                             }{Before saturation}
+	\spinncomplementheatmap{0.30}{ width = \stdwidth
+	                             , height = \stdwidth
+	                             , xshift=1*\stdoffset
+	                             , yticklabel={$ $}
+	                             }{Semi-saturated}
+	\spinncomplementheatmap{0.40}{ width = \stdwidth
+	                             , height = \stdwidth
+	                             , xshift=2*\stdoffset
+	                             , yticklabel={$ $}
+	                             , colorbar
+	                             , colorbar style={xshift=1.3cm}
+	                             }{Fully saturated}
+\end{tikzpicture}
