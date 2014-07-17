@@ -8,38 +8,41 @@
 	exploration of the SpiNNaker platform and the interconnection technology it
 	uses which form the basis of my research.
 	
-	\section{Simulating brains}
-		\label{sec:simulating-brains}
+	\section{Modelling the brain}
 		
 		% What is done, for what purpose
 		
 		The brain is an extremely complex and variable organ whose high-level
 		behaviours are similarly complex and variable. Efforts to understand the
-		brain, unsurprisingly, rely on simplified models of its function. This
-		section gives a brief history of the development of artificial neural
-		networks leading to an outline of the models used today. This is followed by
-		a description of the general structure and behaviour of simulators for such
-		models and the computational challenges this entails.
+		brain, unsurprisingly, rely on simplified models of its function. Modelling
+		approaches cover a wide spectrum from extremely detailed models of the
+		neurophysiology of individual neurons \cite{carnevale06} to high level
+		models where mathematical functions are mapped automatically onto large
+		populations of neurons \cite{eliasmith04}.
 		
-		\subsection{History of artificial neural networks}
+		This section gives a brief historical context for the modelling approaches
+		in use today followed by an overview of a high-level modelling framework.
+		
+		\subsection{History of neural modelling}
 			
-			The development of ANNs can be divided up into three coarse generations,
-			each increasing their level of biological realism \cite{vainbrand11}.
+			The development of neural modelling can be divided up into three coarse
+			generations, each increasing their level of biological realism
+			\cite{vainbrand11}.
 			
-			The first generation of ANNs, such as the McCulloch-Pitts threshold neuron
+			The first generation of models, such as the McCulloch-Pitts threshold neuron
 			\cite{mcculloch43}, consisted of testing if a simple, linear function of
 			the neuron's inputs was above a threshold value and outputting either a
 			`high' or `low' signal. The function used in each neuron and the pattern
 			of connectivity in the network define the behaviour of the network as a
 			whole.
 			
-			It was realised that communication between neurons is not level-based but
-			instead appears to be based on the rate at which `spikes' are produced (or
-			`fired') by neurons to their neighbours. The second generation of ANNs
-			seek to model this by representing the `firing rate' as their output in a
-			continuous value \cite{maass97}. Once again, the network's behaviour was
-			defined by the functions computed by each neuron and the network's
-			connectivity.
+			It was realised that communication between neurons was not simply
+			level-based but instead appeared to be based on the rate at which `spikes'
+			are produced (or `fired') by neurons to their neighbours. The second
+			generation sought to model this by representing the `firing rate' as their
+			output in a continuous value \cite{maass97}. Once again, the network's
+			behaviour was defined by the functions computed by each neuron and the
+			network's connectivity.
 			
 			\begin{figure}
 				\center
@@ -48,7 +51,7 @@
 				\label{fig:snn-example}
 			\end{figure}
 			
-			The third generation of ANNs extends the idea further by realising that
+			The third generation of extended the idea further by realising that
 			the firing rate is not the only significant factor but that the timing of
 			the arrival of spikes is significant too \cite{maass01}. In addition, many
 			of these models aim to reproduce observed physiological behaviours of
@@ -78,6 +81,44 @@
 			essentially assigning a weight non-zero to the connection
 			\cite{bamford10}.
 		
+		\subsection{High-level modelling}
+			
+			The Neural Engineering Framework (NEF) \cite{eliasmith04} is a high level
+			framework for implementing large neural models which exhibit high-level,
+			complex behaviours. The NEF along with the Semantic Pointer Architecture
+			(SPA) \cite{eliasmith13} have been used to build large, complex models
+			including Spaun. The key to the NEF's ability to model complex behaviours
+			is its high-level approach to neural network design. This high-level
+			approach is based on three `principles' which are enumerated below
+			although a detailed explanation is beyond the scope of this document.
+			
+			\begin{description}
+				\item[Representation] Vectors (i.e. an array of numerical values) are
+				encoded in the spiking activity of a population of simple neuron models.
+				
+				\item[Transformation] Arbitrary mathematical functions can be computed
+				by selecting appropriate connection weights between a population of
+				neurons representing a given value and a target population which will
+				represent the result.
+				
+				\item[Dyanmics] By connecting populations of neurons back to themselves,
+				a control system is formed which can be tuned to produce interesting
+				dynamical behaviour. This is used, for example, as a basis for working
+				memory.
+			\end{description}
+			
+			As a result, the NEF can be considered analogous to a compiler for neural
+			models.
+		
+	
+	\section{Simulating brains}
+		
+		The range of neural models described in the previous section all present a
+		significant computational challenge it simulate at scale. This section
+		briefly outlines the challenges faced when simulating large models.
+		
+		% TODO Introduce
+		
 		\subsection{Computation}
 			
 			Computationally, spiking neural models can be relatively simple, the state
@@ -90,10 +131,9 @@
 			
 			Given that biological systems may contain billions of neurons and
 			trillions of synapses spiking at an average rate of 10 Hz, this
-			constitutes a non-trivial amount of of computation even for the simplest
-			models. In order to maintain real-time performance, the simulation of
-			different neurons must be distributed across a large number of processing
-			cores.
+			constitutes a non-trivial amount of of computation. In order to maintain
+			real-time performance, the simulation of different neurons must be
+			distributed across a large number of processing cores.
 		
 		\subsection{Communication}
 			
@@ -130,7 +170,8 @@
 			NP-complete though highly performant heuristic solutions have been
 			developed for use in other fields such as VLSI and FPGA design
 			\cite{haldar00}.
-	
+		
+		
 	
 	\section{Supercomputer technology}
 		\label{sec:supercomputers}
