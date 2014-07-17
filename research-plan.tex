@@ -7,7 +7,7 @@
 	% SpiNNaker. To this end I will be continuing background activities involving
 	% working with neural modelling.
 	
-	\begin{figure}
+	\begin{figure}[b!]
 		\center
 		\input{figures/plan-gantt}
 		\caption[Gantt chart overview of research plan.]{Gantt chart overview of
@@ -17,54 +17,328 @@
 		\label{fig:plan-gantt}
 	\end{figure}
 	
-	The preliminary work so-far has focused on 
+	The preliminary work so-far has focused on the analysis and exploration of
+	extensions to SpiNNaker's interconnection network. In particular, it focuses
+	on the high-speed serial links which connect chips on different boards within
+	the system. The proposed research plan is summarised in figure
+	\ref{fig:plan-gantt}.
 	
-	\section{FPGA-based routing}
+	The proposed work can be divided into two distinct parts. The first
+	investigates the use of small-world, or small-world-like networks within
+	actual SpiNNaker systems. The second extends this to attempt to improve power
+	efficiency within SpiNNaker by powering-off or slowing down links where
+	lightly-loaded alternatives exist.
+	
+	To measure success, realistic network traffic from neural simulations, along
+	with the collection of suitable metrics will be required. Building a
+	representative selection of benchmark networks, along with the infrastructure
+	for assessing their impact on SpiNNaker's interconnect will be a key part of
+	the work undertaken.
+	
+	This chapter will outline each of the key research aims and the work proposed
+	in approximately chronological order.
+	
+	\section{Nengo network experiments}
+		
+		Nengo and the SPA provide an actively used neural modelling architecture
+		capable of generating large scale neural models. Unlike many other
+		approaches Nengo is already being used to construct large models from simple
+		neurons, the design target of SpiNNaker. The SPAUN model, for example,
+		contains 2.5 million simple neurons \cite{eliasmith12}, while models
+		produced by students at the two-week Nengo 2014 Summer School constructed
+		networks containing almost half a million neurons, even within this short
+		timespan. As well as being large, Nengo models generally feature easily
+		verified high level-behaviour. This feature enables easier identification of
+		system failures and can help guide efforts to debug issues.
+		
+		In addition to the above, Nengo's SpiNNaker implementation lends itself to
+		convenient analysis due to its unconventional implementation. Though still
+		simulating spiking neurons, the spikes themselves are not transmitted over
+		SpiNNaker's network, instead, the value represented by the spikes is
+		transmitted. This approach exploits the observation that typically a
+		population with hundreds of neurons will represent only a vector of one or
+		two values. Though the value must be transmitted every time step (typically
+		1ms) and requires a `long' 72 bit SpiNNaker packet, a large population of
+		neurons in Nengo typically produces a large number of spikes each time step,
+		each requiring a `short' 40 bit packet. For example, for a population of
+		1,000 neurons representing a two-valued vector and firing at an average rate
+		of 10 Hz there would be around ten 40 bit packets (400 bits) transmitted
+		each millisecond.  Alternatively, if the represented value was transmitted,
+		only two 72 bit packets would be required (144 bits). In reality, many Nengo
+		models feature firing rates far higher than the 10 Hz average found in the
+		brain and which is the design target of SpiNNaker. As a result, this
+		mechanism can result in significant savings while also making it practical
+		to run models on SpiNNaker.
+		
+		Transmission of represented value has the side-effect of making the rate of
+		packet transmission deterministic: the same number of values must be
+		transmitted every millisecond, regardless of the simulated network's state.
+		This means that artificially reproducing the traffic patterns and modelling
+		them analytically is greatly simplified.
+		
+		Initially, work will be carried out to analyse the effects of different
+		traffic patterns produced by large Nengo networks in SpiNNaker. This is
+		planned to consist of the creation of a new `neuron type' which instead of
+		actually modelling a neuron simply generates an equivalent traffic pattern
+		and records network behaviour. Since most Nengo networks use a single neuron
+		type, this means a single parameter change is required for any given
+		network. Additionally, this approach allows great flexibility in the metrics
+		recorded since cores will be largely idle.
+		
+		In addition to `real' Nengo models a number of synthetic models designed to
+		stress network resources will also be created.
+		
+		This work is expected to produce two major outcomes: an improvement in
+		Nengo's performance on SpiNNaker and also the production of a suite of
+		benchmarks based on real Nengo networks. The former improvement is expected
+		to result primarily from a better understanding of the effect that different
+		patterns of packet transmission have on network performance. Some
+		improvement is also anticipated through improvements to the placement and
+		routing algorithms used for allocating simulation components to cores in the
+		system. This work is planned for publication though a venue has not yet been
+		selected.
+		
+	
+	\section{Small-World Networks for SpiNNaker}
 		
 		% Develop routing scheme for SpiNNaker packets suitable for peripheral, host
 		% and preliminary small-world communications via the SpiNNaker links. This
 		% scheme will continue to make use of the current HSS protocol blocks.
 		
-		\subsection{Host communication}
-			
-			% Snooping, loading, etc.
+		In order to exploit the benefits of small-world network topologies work will
+		be carried out to attempt to implement them within SpiNNaker's
+		board-to-board interconnection. Work will begin in tandem with Nengo network
+		experiments to extend the Tickysim network simulator with small world
+		connectivity. Guided by these simulation results, this will be followed by
+		an implementation in SpiNNaker. This implementation will then be evaluated
+		using the Nengo benchmarks above.
 		
-		\subsection{Peripheral communication}
-			
-			% Configuration and hetrogenaity
+		There are three main challenges associated with this task which are outlined
+		in this section. The first is the construction of a routing scheme which is
+		easily implemented within the available FPGA logic. The second is the method
+		by which random links are added and which effect this has on physical
+		assembly difficulties and performance. The last, which will be undertaken
+		only if time allows, is the possibility of routing packets between FPGAs on
+		the same board to allow, for example, packets to `hop over' an entire board.
 		
-		\subsection{Board-to-board communication}
+		\subsection{Routing}
 			
-			% Small world networks
+			One of the principle challenges of implementing new network topologies
+			within the FPGAs on a SpiNNaker board is that all routing must take place
+			within the FPGA itself. Within a SpiNNaker chip, routing is handled by
+			dedicated routing hardware featuring a large associative memory able to
+			search a table of up to 1,024 routing entries in a single cycle. Within
+			the FPGA, such structures are very expensive. Additionally, each FPGA is
+			responsible for sixteen individual streams of traffic, all of which must
+			be routed without reducing their throughput.
+			
+			In preliminary work, a very simple single-entry key and mask routing
+			scheme proved adequate for host and potentially peripheral connectivity.
+			This scheme consists of a mask and comparison which can be implemented
+			very cheaply within the FPGA logic.  This approach is adequate here
+			because generally there will be only a few I/O devices in a system
+			compared with the number of neurons and so it is feasible to allocate an
+			entire bit (or more) of the system's routing key space to indicate such
+			packets.  For small world networks, however, allocating a part of the key
+			space to indicate when each small-world link should be used would be
+			prohibitive due to the number of such links.
+			
+			One possible approach to this problem is to exploit the relative speed
+			differences between the FPGA logic and the links to SpiNNaker chips. A
+			SpiNNaker chip link can nominally transmit a (short) packet in around 167
+			$\mu$s while FPGA logic clocked at 75 MHz cycles in around 13 ns. This
+			means that if a router with a throughput of one packet per cycle was
+			implemented, up to twelve links could be handled simultaneously without
+			impacting on throughput. This means that two such routers would be
+			required to handle each FPGA's sixteen links. A feasibility study will be
+			required to establish the potential capability of such routers given the
+			resources available on the FPGAs on each board.
+			
+			An alternative approach is to allow the FPGAs to modify the routing keys
+			of packets which pass through them. If it is found that most packets will
+			only use a single small-world link, a single bit could be defined within
+			the key space to indicate that a packet should use the first small-world
+			link it encounters. This bit would be cleared as it crosses the small
+			world link after which the packet would be routed normally. This method
+			would be able to exploit the existing key and mask routing scheme already
+			implemented at the expense of greater complexity in the placement and
+			routing system.
+			
+			The selection of the approach to be used will depend on the results of
+			Tickysim simulations. Additionally, the choice may be guided by time
+			constraints since a basic implementation of the second approach is likely
+			to be significantly less time consuming than a full FPGA based router
+			implementation.
+		
+		\subsection{Random Connectivity}
+			
+			The method by which random connectivity is introduced into a small-world
+			network can have a significant impact on both the amount of manual labour
+			required to install it and also the actual performance gains achieved. One
+			approach is to generate random connections and produce a list of wiring
+			instructions for a technician to assemble. The alternative is to allow the
+			technician to manually add the connections at random.
+			
+			Computer generated random connections have the advantage that they can be
+			both unbiased and also may be post processed to remove links which, for
+			example, happen to connect two already neighbouring or nearly-neighbouring
+			boards. The main downside of this approach is that the manual effort
+			required to manually assemble such connections may be great, especially
+			for large machines where there may be as many as 3,600 sockets where
+			connections may potentially be made.
+			
+			The alternative approach, while straightforward for a technician may be
+			marred by the poor quality of human generated randomness
+			\cite{figurska08}. Additionally, humans are unlikely to be able to spot
+			and avoid `obviously poor' choices due to the complexity of the wiring
+			schemes derived in preliminary work.
+			
+			Some work is required in this area to establish the efficacy of either
+			approach. Simple experiments building on the simple graph based models
+			used in preliminary work will be carried out to attempt to judge the
+			importance of the random decision making.
+		
+		\subsection{Board-Hopping}
+			
+			% TODO: Diagram?
+			
+			The FPGAs on a SpiNNaker boards are interconnected allowing them to
+			communicate locally via a currently unused HSS ring network. If time
+			allows, this could be used to directly forward packets which would
+			otherwise simply pass directly through all the chips the board before
+			emerging on the other side. This mechanism may potentially reduce
+			contention for link resources on intervening chips. This mechanism is a
+			variant of an express cube \cite{dally91} which requires no additional
+			implementation resources since it exploits existing hierarchy in the
+			network.
+		
+		\subsection{Evaluation}
+			
+			The suite of Nengo benchmark networks described in the previous section
+			will be used to evaluate the performance of the system. It is hypothesised
+			that large, heavily connected networks will benefit from the additional
+			connectivity since these are where longer connections are likely to exist
+			as well as greater contention for link resources.
 	
 	
-	\section{SpiNNaker traffic analysis}
+	\section{USB 3.0 Interface}
 		
-		% To better target efforts and gain further understanding, work with Mundrew
-		% on Nengo network experiments to assess performance.  Must try to get a
-		% picture of what demand for links will be like. High-speed links offer a
-		% unique peek into network traffic beyond what is offered by existing
-		% counters.
+		As part of the collaboration to develop a high speed interface for host
+		connectivity with SpiNNaker an FPGA design will be produced upon the
+		completion of a prototype interface board. No firm date has been given for
+		arrival of a prototype board and so the dates indicated in figure
+		\ref{fig:plan-gantt} are approximate. This work will consist of an extension
+		of the UART proof-of-concept design which interfaces with a Cypress FX-3 USB
+		3.0 interface chip in place of the FTDI UART-over-USB interface chip.
+		
+		Given the timely availability of this device, it will allow superior
+		monitoring of the SpiNNaker network since packets travelling over a link can
+		be `snooped' via the USB link without impacting the system's performance.
+		Additionally, it would allow software models of high-bandwidth I/O devices
+		and host communications to be implemented.
 	
-	\section{High-speed serial power control}
+	
+	\section{High-speed serial power management}
 		
 		% Work to try and make some power savings by powering down idle links or
 		% reducing speed (to reduce link transitions), taking into account latency
 		% concerns for SpiNNaker.
 		
-		\subsection{Power-down and bring-up}
-			
-			% Specify latency issues, describe current technologies for doing this and
-			% appropriate signalling stuff. See PCI-E, S-ATA and friends.
+		Power consumption is an important consideration for large SpiNNaker
+		machines. At present, SpiNNaker's high-speed serial links operate at full
+		speed at all times, even when no traffic is present, potentially wasting a
+		significant amount of energy. While numerous techniques for power managing
+		HSS technologies exist, these tend to be optimised toward more conventional
+		super computer loads.
 		
-		\subsection{Speed changing}
-			
-			% Possible application of link speeds being set in response to demand.
+		In general, power savings are achieved either by powering down idle links
+		completely or by running links at low speeds. These techniques introduce
+		problems for latency-sensitive, largely lightly-loaded interconnection
+		networks as in SpiNNaker. Typically power savings are achieved in HSS links
+		by powering off a link or operating it at lower speed. This process
+		introduces an inherent delay since it requires the sender and receiver's
+		PLLs to re-lock on to the new frequency which can take on the order of 1 ms
+		\cite{xilinx14}. Though this latency may be acceptable for coarse-grained
+		power management, it would prohibit the SpiNNaker realtime goal of packets
+		being delivered within 1 ms.
 		
-		\subsection{Always-on links}
+		This section describes two complementary proposals for making use of these
+		existing low-power techniques while also maintaining realtime performance.
+		The section concludes with a possible collaboration with the Technical
+		University of Dresden where a link with better performance may be developed.
+		
+		\subsection{Link oversampling}
 			
-			% Use a selection of always-on serial links when demand is low or others
-			% are being powered up. How do small-world links fit in this picture?
+			% During PLL locking, could still have good performance
+			
+			During PLL acquisition, the clock signal produced is of low quality and
+			gradually approaches the ideal waveform. One design hypothesis is that
+			during this acquisition period, data may still be sent at low speeds, for
+			example by duplicating every bit sent across the link (oversampling).
+			Additionally, further error detection information may be included during
+			this time to handle the increased error rate. This technique may reduce
+			the latency between link speed changes and useful data propagating across
+			a link.
+			
+			A large part of this work will consist of characterising the quality of
+			the link during PLL acquisition and thus determining the oversampling
+			required. This technique will also require reimplementation of parts of
+			the HSS hard IP to be reimplemented in FPGA logic.
+		
+		\subsection{Traffic redirection}
+			
+			% Send traffic around other edges of a triangle
+			
+			\begin{figure}
+				\center
+				\input{figures/emergency-routing}
+				
+				\caption[Emergency routing example.]{Emergency routing example. A
+				faulty link is avoided by traversing two neighbouring links.}
+				\label{fig:emergency-routing}
+			\end{figure}
+			
+			An alternative to attempting to use links during PLL acquisition is to
+			redirect traffic via another route in the system. One of the advantages of
+			the hexagonal torus topology is a high level of redundancy between links.
+			At the chip-to-chip level, SpiNNaker supports an `emergency routing'
+			scheme where packets are automatically re-routed around faulty links as
+			shown in figure \ref{fig:emergency-routing}. These emergency routes
+			feature only a single hop of overhead and additionally require only very
+			simple, fixed routing. Since the HSS board-to-board links within SpiNNaker
+			are also arranged in a (coarser) hexagonal torus, this same principle can
+			in be used here.
+			
+			\begin{figure}
+				\center
+				\input{figures/board-to-board-redirection}
+				
+				\caption[Board-to-board traffic redirection.]{Board-to-board traffic
+				redirection. An unavailable link (e.g. when faulty, PLL-locking or
+				powered down) is avoided by traversing two neighbouring HSS links. Each
+				group of hexagons represents a board of SpiNNaker chips (drawn as
+				hexagons), each rectangular block is a board-to-board FPGA-based HSS
+				block. Connected HSS blocks associated with the same board share an FPGA
+				and may communicate cheaply. Lines between boards are HSS links.}
+				\label{fig:board-to-board-redirection}
+			\end{figure}
+			
+			Figure \ref{fig:board-to-board-redirection} illustrates how frames
+			destined for an unavailable HSS link are instead transmitted via a
+			neighbouring link.  Though this alternative route appears much longer,
+			only two HSS links are crossed (an overhead of one HSS hop). Since each
+			FPGA implements two HSS board-to-board links, frames destined for an
+			unavailable link can be cheaply forwarded to the other link for
+			transmission. The intermediate FPGA then dumbly forwards the frame to its
+			other HSS link where the frame finally arrives at the intended FPGA. The
+			arriving frame must then be forwarded within the FPGA to the unavailable
+			link's block which may then process the frame as if it had arrived
+			directly.
+			
+			As with emergency routing, the redirection technique only works when only
+			one of the HSS links within a set of three is unavailable. As a result
+			link speed changes must be carefully scheduled in order to ensure that
+			only one link within the set is changing speed at a given moment.
 		
 		\subsection{`Santos-28' test chip}
 			
@@ -72,11 +346,21 @@
 			% technologies' performance for inclusion in a second generation SpiNNaker
 			% chip. There may be room in this space for my own involvement in this
 			% work at short notice.
+			
+			In a collaboration between the University of Manchester and the Technical
+			University of Dresden a test chip is being developed to pave the way
+			towards the next generation of SpiNNaker system. The test chip will be
+			manufactured using a modern 28 nm process and will notably make use of HSS
+			links both internally and also between chips. The proposed HSS links have
+			been developed by the researchers in Dresden and therefore work in this
+			area may be possible. Due to the currently unpredictable state of this
+			project, this work does not appear in the Gantt chart. Should the work
+			take place, it will initially replace the other work planned in this
+			section.
 	
-	
-	\section{Performance evaluation}
+	\section{Thesis writing}
 		
-		% Can build on work by Evangelos to see how performance in terms of power
-		% works out with various FPGA based things going on. Hopefuly steal some of
-		% his test networks. Can also sneak myself into work on SPAUN performance
-		% messings.
+		A large block of time is reserved for the production of a thesis. This
+		generous allocation ensures that adequate time is available for the
+		collection of additional data which are found to be missing at the time of
+		writing.

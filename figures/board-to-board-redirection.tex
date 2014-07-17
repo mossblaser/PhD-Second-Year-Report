@@ -1,0 +1,158 @@
+\begin{tikzpicture}[thick]
+	\pgfmathsetlengthmacro{\routeroffset}{2em}
+	\pgfmathsetlengthmacro{\routerheight}{2em}
+	
+	\def\boardoffset{3}
+	
+	\newcommand{\spinnlink}[4]{
+		% Block
+		\draw ([shift={(#3:\routeroffset)}]#1) coordinate (#4 p0) -- coordinate (#4 bottom)
+		      ([shift={(#3:\routeroffset)}]#2) coordinate (#4 p1) -- coordinate (#4 right)
+		      ([shift={(#3:\routeroffset+\routerheight)}]#2) coordinate (#4 p2) -- coordinate (#4 top)
+		      ([shift={(#3:\routeroffset+\routerheight)}]#1) coordinate (#4 p3) -- coordinate (#4 left)
+		      ([shift={(#3:\routeroffset)}]#1)
+		   -- cycle
+		      ;
+		% Links to chips
+		\foreach \link in {0.0,0.14285714,...,1.0}{
+			\draw ($(#1)!\link!(#2)$) -- ++(#3:\routeroffset);
+		}
+		
+		% Links to other boards
+		\draw ([shift={(#3:\routeroffset+\routerheight)}]$(#1)!0.5!(#2)$)
+		   -- ++([shift={(#3:-\routeroffset-\routerheight)}]#3:\boardoffset);
+	}
+	
+	\begin{scope}[scale=0.3, help lines]
+		\clip (6,6.5) rectangle ++(39.5,24);
+		\foreach \tbyoff in {0,...,1}{
+			\foreach \tbxoff in {0,...,2}{
+				\foreach \xoff/\yoff/\colour in {%
+					0                / 0                /red,%
+					4+\boardoffset   / 8+\boardoffset*2 /green,%
+					8+\boardoffset*2 / 4+\boardoffset   /blue%
+				}{
+					% Chips
+					\foreach \x/\y/\num in {%
+					                                          0/4/45,   1/4/46,   2/4/47,   3/4/48, %
+					                                -1/3/44,  0/3/25,   1/3/26,   2/3/27,   3/3/28, %
+					                      -2/2/43,  -1/2/24,  0/2/11,   1/2/12,   2/2/13,   3/2/29, %
+					            -3/1/42,  -2/1/23,  -1/1/10,  0/1/3,    1/1/4,    2/1/14,   3/1/30, %
+					  -4/0/41,  -3/0/22,  -2/0/9,   -1/0/2,   0/0/1,    1/0/5,    2/0/15,   3/0/31, %
+					  -4/-1/40, -3/-1/21, -2/-1/8,  -1/-1/7,  0/-1/6,   1/-1/16,  2/-1/32,          %
+					  -4/-2/39, -3/-2/20, -2/-2/19, -1/-2/18, 0/-2/17,  1/-2/33,                    %
+					  -4/-3/38, -3/-3/37, -2/-3/36, -1/-3/35, 0/-3/34,                              %
+					}{
+						\begin{scope}[hexagonXYZ]
+							\node [ inner sep=0
+							      , draw
+							      , hexagon
+							      , minimum size=0.3cm
+							      , inner sep=0
+							      ]
+							      at ( \x+\xoff+\tbxoff*12+\tbxoff*\boardoffset*3
+							         , \y+\yoff+\tbyoff*12+\tbyoff*\boardoffset*3)
+							      (x\tbxoff y\tbyoff z\colour chip\num)
+							      {};
+						\end{scope}
+					}
+					
+					% Links
+					\spinnlink{x\tbxoff y\tbyoff z\colour chip45.side north}{     x\tbxoff y\tbyoff z\colour chip48.side north east}{90}{x\tbxoff y\tbyoff z\colour fpganorth};
+					\spinnlink{x\tbxoff y\tbyoff z\colour chip41.side north}{     x\tbxoff y\tbyoff z\colour chip45.side west}{150}{x\tbxoff y\tbyoff z\colour fpgawest};
+					\spinnlink{x\tbxoff y\tbyoff z\colour chip38.side south west}{x\tbxoff y\tbyoff z\colour chip41.side west}{-150}{x\tbxoff y\tbyoff z\colour fpgasouth west};
+					\spinnlink{x\tbxoff y\tbyoff z\colour chip34.side south west}{x\tbxoff y\tbyoff z\colour chip38.side south}{-90}{x\tbxoff y\tbyoff z\colour fpgasouth};
+					\spinnlink{x\tbxoff y\tbyoff z\colour chip31.side east}{      x\tbxoff y\tbyoff z\colour chip34.side south}{-30}{x\tbxoff y\tbyoff z\colour fpgaeast};
+					\spinnlink{x\tbxoff y\tbyoff z\colour chip48.side east}{      x\tbxoff y\tbyoff z\colour chip31.side north east}{30}{x\tbxoff y\tbyoff z\colour fpganorth east};
+					
+					% Connect links together
+					%\draw (x\tbxoff y\tbyoff z\colour fpganorth left)      -- (x\tbxoff y\tbyoff z\colour fpgawest right);
+					\draw (x\tbxoff y\tbyoff z\colour fpgawest left)       -- (x\tbxoff y\tbyoff z\colour fpgasouth west right);
+					%\draw (x\tbxoff y\tbyoff z\colour fpgasouth west left) -- (x\tbxoff y\tbyoff z\colour fpgasouth right);
+					\draw (x\tbxoff y\tbyoff z\colour fpgasouth left)      -- (x\tbxoff y\tbyoff z\colour fpgaeast right);
+					%\draw (x\tbxoff y\tbyoff z\colour fpgaeast left)       -- (x\tbxoff y\tbyoff z\colour fpganorth east right);
+					\draw (x\tbxoff y\tbyoff z\colour fpganorth east left) -- (x\tbxoff y\tbyoff z\colour fpganorth right);
+				}
+			}
+		}
+	\end{scope}
+	
+	% Dead link
+	\draw [ultra thick, white]
+	      (x1y0zgreenfpganorth east top)
+	   -- (x2y1zredfpgasouth west top);
+	\draw [->,dotted,gray]
+	      (x1y0zgreenfpganorth east top) -- coordinate (mid dead link)
+	      (x2y1zredfpgasouth west top);
+	\node [red] at (mid dead link) {$\times$};
+	
+	%% Source chip
+	%\node [draw,hexagon,inner sep=0,minimum size=0.3cm] at (x1y0zgreenchip30) {};
+	%
+	%% Source link
+	%\draw [->] (x1y0zgreenchip30.side north east) -- ++(30:0.3*\routeroffset);
+	
+	% Source link outline
+	\draw (x1y0zgreenfpganorth east p0)
+	   -- (x1y0zgreenfpganorth east p1)
+	   -- (x1y0zgreenfpganorth east p2)
+	   -- (x1y0zgreenfpganorth east p3)
+	   -- cycle;
+	
+	% Inter-FPGA link 1
+	\draw [->] (x1y0zgreenfpganorth east left) -- (x1y0zgreenfpganorth right);
+	
+	% Source second link outline
+	\draw (x1y0zgreenfpganorth p0)
+	   -- (x1y0zgreenfpganorth p1)
+	   -- (x1y0zgreenfpganorth p2)
+	   -- (x1y0zgreenfpganorth p3)
+	   -- cycle;
+	
+	% Board-to-board link 1
+	\draw [->] (x1y0zgreenfpganorth top) -- (x1y1zbluefpgasouth top);
+	
+	% Intermediate first link outline
+	\draw (x1y1zbluefpgasouth p0)
+	   -- (x1y1zbluefpgasouth p1)
+	   -- (x1y1zbluefpgasouth p2)
+	   -- (x1y1zbluefpgasouth p3)
+	   -- cycle;
+	
+	% Intermediate second link outline
+	\draw (x1y1zbluefpgaeast p0)
+	   -- (x1y1zbluefpgaeast p1)
+	   -- (x1y1zbluefpgaeast p2)
+	   -- (x1y1zbluefpgaeast p3)
+	   -- cycle;
+	
+	% Inter-FPGA link 2
+	\draw [->] (x1y1zbluefpgasouth left) -- (x1y1zbluefpgaeast right);
+	
+	% Board-to-board link 2
+	\draw [->] (x1y1zbluefpgaeast top) -- (x2y1zredfpgawest top);
+	
+	% Dest first link outline
+	\draw (x2y1zredfpgawest p0)
+	   -- (x2y1zredfpgawest p1)
+	   -- (x2y1zredfpgawest p2)
+	   -- (x2y1zredfpgawest p3)
+	   -- cycle;
+	
+	% Inter-FPGA link 3
+	\draw [->] (x2y1zredfpgawest left) -- (x2y1zredfpgasouth west right);
+	
+	% Dest second link outline
+	\draw (x2y1zredfpgasouth west p0)
+	   -- (x2y1zredfpgasouth west p1)
+	   -- (x2y1zredfpgasouth west p2)
+	   -- (x2y1zredfpgasouth west p3)
+	   -- cycle;
+	
+	%% Dest link
+	%\draw [<-] (x2y1zredchip39.side south west) -- ++(30:-0.3*\routeroffset);
+	%
+	%% Dest chip
+	%\node [draw,hexagon,inner sep=0,minimum size=0.3cm] at (x2y1zredchip39) {};
+	
+\end{tikzpicture}	

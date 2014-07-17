@@ -25,16 +25,163 @@
 		% Constraint of electrical high-speed-serial is that long wires are not
 		% allowed. For tori, this is a problem due to wrap-around.
 		
+		Electrical HSS links such as those used in SpiNNaker's board-to-board
+		connections impose restrictions on the maximum length of cables. In the case
+		of SpiNNaker's board-to-board links which use the S-ATA's physical
+		connection standard, cable lengths are limited to one meter for most
+		applications \cite{sata3spec}.
+		
+		\begin{figure}
+			\center
+			\input{|"python2 figures/boardsLogical.py"}
+			\caption[Logical arrangement of boards in a 48 board SpiNNaker
+			system.]{Logical arrangement of boards in a 48 board SpiNNaker system.
+			Touching boards are connected. Coloured lines represent long connections
+			travelling {\color{red}North/South},
+			{\color{green}North-East/South-West} and {\color{blue}East/West}.}
+			\label{fig:boardsLogical}
+		\end{figure}
+		
+		Figure \ref{fig:boardsLogical} shows the logical connectivity of a small
+		SpiNNaker system containing 48 boards (represented as hexagons). Touching
+		edges represent a connection between two boards. Lines show the connectivity
+		between boards on opposite sides of the system. While the majority of wires
+		are very short (i.e. connect two boards which are side-by-side), some wires
+		must cross the entire system's length. If SpiNNaker boards are arranged
+		na\"ively to match their logical layout, for the largest planned SpiNNaker
+		machine, one million cores spanning ten server-room cabinets, this results
+		in wires over six meters long.
+		
+		The principles of the machine's construction described by by Davidson
+		\cite{davidsonWiring} and Furber \cite{furber13email} were used as the basis
+		for a tool, SpiNNer, used to model and experiment with possible physical
+		arrangements of SpiNNaker boards \footnote{The SpiNNer tool was also used to
+		generate many of the figures in this section.}. The development and use of
+		this tool has led to practical wiring schemes for SpiNNaker systems ranging
+		in size from three boards to a ten cabinets. This section describes the
+		principle by which these schemes are produced.
+		
 		\subsection{Reducing wiring length}
 			
-			% Description of the folding technique
-		
-		\subsection{`SpiNNer' Wiring Guide Generator}
+			\begin{figure}
+				\begin{subfigure}[b]{\textwidth}
+					\center
+					\input{figures/ringLong}
+					\caption{A ring network}
+					\label{fig:ringLong}
+				\end{subfigure}
+				
+				\vspace{2ex}
+				
+				\begin{subfigure}[b]{\textwidth}
+					\center
+					\input{figures/ringFolded}
+					\caption{Folded in half}
+					\label{fig:ringFolded}
+				\end{subfigure}
+				
+				\vspace{2ex}
+				
+				\begin{subfigure}[b]{\textwidth}
+					\center
+					\input{figures/ringInterleaved}
+					\caption{Interleaved}
+					\label{fig:ringInterleaved}
+				\end{subfigure}
+				
+				\caption[Folding a ring network.]{The process of folding a ring network
+				to reduce the maximum wire length.}
+				\label{fig:folding}
+			\end{figure}
 			
-			% Python Library and various front-ends have been produced which produce
-			% wiring diagrams and listings. The tool has been successfuly used to
+			Long wires can be removed from a toroid network by `folding'
+			\cite{dally04}. An example of this process is shown for a simple
+			ring-network (a 1-dimensional toroid) in figure \ref{fig:folding}.
+			
+			\begin{figure}
+				\center
+				\begin{subfigure}[b]{\textwidth}
+					\center
+					\input{|"python2 figures/boardsFoldedShift.py"}
+					\caption{Shift boards on the left to the right to form a rectangle.}
+					\label{fig:boardsFoldedShift}
+				\end{subfigure}
+				
+				\vspace{2ex}
+				
+				\begin{subfigure}[b]{\textwidth}
+					\center
+					\input{|"python2 figures/boardsFoldedSpaced.py"}
+					\caption{Fold along the gaps in this figure. (Wires omitted for
+					clarity.)}
+					\label{fig:boardsFoldedSpaced}
+				\end{subfigure}
+				
+				\vspace{2ex}
+				
+				\begin{subfigure}[b]{\textwidth}
+					\center
+					\input{|"python2 figures/boardsFoldedInterleaved.py"}
+					\caption{The (more complex) wiring after folding. (Shown here with
+					squares as hexagons do not visually fit together after folding and
+					interleaving.)}
+					\label{fig:boardsFoldedInterleaved}
+				\end{subfigure}
+				
+				\caption[Folding SpiNNaker.]{The process of folding SpiNNaker. Coloured
+				lines represent wires travelling {\color{red}North/South},
+				{\color{green}North-East/South-West} and {\color{blue}East/West}.}
+				\label{fig:boardsFolded}
+			\end{figure}
+			
+			This process is generalised to SpiNNaker's boards as shown in figure
+			\ref{fig:boardsFolded}. The first step (figure
+			\ref{fig:boardsFoldedShift}) transforms the rhombus-like arrangement of
+			boards into a rectangle which is more easily folded.
+			
+			In the next step, the design is folded into four parts on the X-axis and
+			into two on the Y-axis (figure \ref{fig:boardsFoldedSpaced}). It is
+			necessary to fold the X-axis into four as the long, diagonal wires do not
+			cross the entire system on the X-axis and instead reach half way. Folding
+			in two would not bring these points any closer while folding into four
+			brings them next to each other. For example, the wire travelling from the
+			bottom left board to the top-middle board after folding in two would now
+			have to cross from one end of the system to the other, an even longer
+			distance than it had to before. As a result, the maximum wire length is
+			reduced which can be seen in figure \ref{fig:boardsFoldedInterleaved}.
+			
+			\label{sec:mapping-spinnaker-to-cabinets}
+			
+			The final step in the process is to map the boards into their real-world
+			physical positions. The largest SpiNNaker system will be installed into a
+			series of cabinets, each containing a number of racks into which the
+			boards are slotted and wired together. Figure \ref{fig:spinnaker106} shows
+			the proposed rack placement scheme for the largest planned SpiNNaker system
+			of 1,200 boards.
+			
+			\begin{figure}
+				\center
+				\includegraphics[width=\textwidth]{figures/spinnaker106}
+				\caption[SpiNNaker machine mapped into cabinets and racks.]{The largest
+				SpiNNaker machine with 1,200 boards and 1,036,800 cores mapped into 10
+				cabinets of 5 racks each.  Coloured lines represent wires connecting
+				{\color{red}North/South}, {\color{green}North-East/South-West} and
+				{\color{blue}East/West} links.}
+				\label{fig:spinnaker106}
+			\end{figure}
+			
+			Even though the system is physically around six metres long, the longest
+			wire will be less than one metre in length and thus within the S-ATA
+			specification.
+		
+		\subsection{Future Work}
+			
+			% The tool has been successfuly used to
 			% assemble machines (pictures!) and provide orders for cabling for the
-			% next machines.
+			% next machines. Next stage will involve extending this to interactively
+			% guiding larger builds and 
+			
+			TODO
 	
 	
 	\section{Small-world networks}
@@ -45,20 +192,181 @@
 		% board-to-board links while taking advantage of the physical arrangement
 		% described in the previous section.
 		
+		Small-world networks are graphs with a very large number of nodes but,
+		within which, the maximum shortest-path between pairs of nodes.
+		Additionally, each node also features only a relatively small number of
+		connections. They also contain `clusters' of well connected nodes, in
+		contrast with random graphs (which may also fulfil the first criterion).
+		
+		Small world networks are often found in nature, perhaps most famously in
+		social networks. In this context, the phenomenon was first observed in 1929
+		by Hungarian author Frigyes Karinthy\cite{karinthy29} and has become
+		popularly known by the name `six degrees of separation'. The theory states
+		that for any two people on earth, chosen at random, there is a chain of at
+		most 6 acquaintances which connects them.
+		
+		This property of maintaining low maximum shortest-path length while still
+		remaining locally well connected is desirable for certain computational
+		problems. In neural simulations, most communication is local with just a few
+		longer connections. The clustering property of small world networks means
+		these local connections can be well catered for while the low maximum
+		shortest-path length means longer connections are still quick for very large
+		models.
+		
+		In this section a simple method for constructing small-world networks is
+		introduced which does require physically long connections while still
+		exhibiting significant reductions in network latency.
+		
 		\subsection{Constructing small-world networks}
 			
 			% Add random links and lo-and-behold, smallworldness!
+			
+			Watts and Strogatz have proposed an algorithm for randomly constructing
+			networks with small-world properties \cite{watts98}. The algorithm begins
+			by creating a ring network with each node connecting to a fixed number of
+			its neighbours (figure \ref{fig:ringNetworkB0}). In the next step, with a
+			probability of $\beta$, each edge may be replaced by a random connection.
+			For $0 < \beta < 1$, the networks produced exhibit varying degrees of the
+			small-world properties (figure \ref{fig:ringNetworkB02}).  Finally, in the
+			extreme case where $\beta=1$, the network devolves into a random network
+			(figure \ref{fig:ringNetworkB1}).
+			
+			\begin{figure}
+				\center
+				\begin{subfigure}[t]{0.3\textwidth}
+					\center
+					\input{figures/ringNetwork}
+					\caption{Ring ($\beta = 0.0$)}
+					\label{fig:ringNetworkB0}
+				\end{subfigure}
+				\begin{subfigure}[t]{0.3\textwidth}
+					\center
+					\input{figures/ringNetworkB02}
+					\caption{Watts-Strogatz ($\beta = 0.2$)}
+					\label{fig:ringNetworkB02}
+				\end{subfigure}
+				\begin{subfigure}[t]{0.3\textwidth}
+					\center
+					\input{figures/ringNetworkB1}
+					\caption{Random ($\beta = 1.0$)}
+					\label{fig:ringNetworkB1}
+				\end{subfigure}
+				
+				\caption{Watts-Strogatz networks with a range of rewiring
+				probabilities.}
+				\label{fig:ringNetwork}
+			\end{figure}
 		
 		\subsection{Modelling and results}
 			
 			% Don't need too many links to get a good return in terms of reduced
 			% path length. Limiting results to short wires doesn't hurt too much,
 			% especially after folding.
+			
+			This algorithm is readily extended to torus topologies similar to
+			SpiNNaker's. In this preliminary work, a $k$-ary 2-cube (a two dimensional
+			torus $k$ nodes long in each dimension) was used as the initial network as
+			in figure \ref{fig:torusNetworkB0}.  Random permutations are introduced as
+			in the Watts-Strogatz model resulting in a network such as figure
+			\ref{fig:torusNetworkB01}.
+			
+			\begin{figure}
+				\center
+				\begin{subfigure}[t]{0.45\textwidth}
+					\center
+					\input{figures/torusNetwork}
+					\caption{Unmodified torus ($\beta=0.0$)}
+					\label{fig:torusNetworkB0}
+				\end{subfigure}
+				\begin{subfigure}[t]{0.45\textwidth}
+					\center
+					\input{figures/torusNetworkB01}
+					\caption{Rewired torus ($\beta=0.1$)}
+					\label{fig:torusNetworkB01}
+				\end{subfigure}
+				
+				\caption{Extension of the Watts-Strogatz model to a 6-ary 2-cube.}
+				\label{fig:torusNetwork}
+			\end{figure}
+			
+			A $k$-ary $n$-cube has an average shortest path length of $\frac{nk}{4}$.
+			This is because a packet travels (on average, under uniform random
+			traffic) $\frac{1}{4}$ of the way around each of the $n$, $k$-node-long
+			dimensions. In this case, that means the average path length is $\frac{2
+			\times 6}{4} = 3$.
+			
+			\begin{figure}
+				\center
+				\includegraphics[width=0.7\textwidth]{figures/smallWorldTorus}
+				\caption[Average shortest-path length for folded 40-ary 2-cube.]{Average
+				shortest-path length for folded 40-ary 2-cube (mean of 10 runs, error
+				bars show 1 standard deviation).}
+				\label{fig:smallWorldTorus}
+			\end{figure}
+			
+			Experiments using a simple graph-based model were carried out to determine
+			the effects of rewiring on shortest-path length.  For the randomly rewired
+			rewired network shown, the average shortest path is now reduced from 3 to
+			2.77 hops.  Further, this model was used to confirm findings by Shin et
+			al.  \cite{shin11} who found an increase in bandwidth (though the findings
+			also apply to latency) when even just a small number of links are rewired
+			as shown in figure \ref{fig:smallWorldTorus}.
+			
+			Unfortunately, by na\"ively adding random links it is possible for
+			long-distance connections to be introduced into the network. As described
+			in the previous section, these physically long connections can cause
+			problems for electrical high-speed serial links.
+			
+			Though techniques exist to attempt to optimally lay-out networks
+			containing random wiring \cite{koibuchi13}, these do not deal well with
+			networks which also feature a large degree of regularity. An alternative
+			approach is to simply limit the length of wires randomly inserted.
+			Though this fails to yield large reductions in path length in examples
+			laid out na\"ively as in figure \ref{fig:torusNetwork}, if the network is
+			folded (as described in the previous section), significant reductions can
+			be achieved.
+			
+			\begin{figure}
+				\center
+				\includegraphics[width=0.7\textwidth]{figures/smallWorldLimitedWiring}
+				\caption{Average shortest-path length for folded 40-ary 2-cube with 1\%
+				rewiring}
+				\label{fig:smallWorldLimitedWiring}
+			\end{figure}
+			
+			Figure \ref{fig:smallWorldLimitedWiring} shows the effect of rewiring 1\%
+			of links when the maximum length of a randomly inserted wire is limited.
+			For networks folded twice (as in the case of the proposed SpiNNaker wiring
+			plan), limiting wire length has little impact.
 		
 		\subsection{Further work}
 			
-			% Non-uniformity to be studied. Also, plan to model this with more
-			% realistic traffic and experiment on SpiNNaker.
+			Figure \ref{fig:ringNetworkLimitedWires} shows valid random links in a
+			small ring network with limited wire lengths. Nodes near the top and
+			bottom of the ring potentially have shorter average path lengths compared
+			with other nodes than nodes near the left and right of the ring. This is
+			because the allowed links for top and bottom nodes connect nodes greater
+			logical distances apart in the ring than those allowed on the left and
+			right. The result is that the average path length from two different nodes
+			becomes non-uniform across nodes in different parts of the system.
+			
+			\begin{figure}
+				\center
+				\input{figures/ringNetworkLimitedWires}
+				\caption[Valid random links in a folded ring network with short
+				wires.]{Valid random links in ring network when wires limited to a
+				length of 1 unit and the network is folded as in figure
+				\ref{fig:folding}.}
+				\label{fig:ringNetworkLimitedWires}
+			\end{figure}
+			
+			The effect of this non-uniformity is yet to be studied. In addition, the
+			magnitude of the differences in average path length in different parts of
+			a network is reduced both in higher dimensional topologies and also after
+			the network has been folded and mapped into physical racks and cabinets.
+			Future work intends to implement a small-world style network both within
+			the simulator described in the next section and, subsequently, within
+			SpiNNaker's board-to-board links.
 	
 	
 	\section{SpiNNaker network modelling}
@@ -70,23 +378,180 @@
 		% SpiNNaker's interconnect. This work indirectly offers interesting insights
 		% into behaviours due to the board-to-board links.
 		
+		A recent collaboration with other researchers within the department has
+		investigated novel methods for high-level simulation and modelling of large
+		scale systems. This work used SpiNNaker's interconnection network as its
+		case study and included the development of a number of different simulators
+		including both software and FPGA-based models. The work revealed that modern
+		high-level languages for FPGA and hardware development such as Bluespec
+		System Verilog (BSV) \cite{nikhil04} have reached a level of development
+		efficiency comparable with software. This result demonstrates that modellers
+		are no-longer faced with a decision of whether time allows for a hardware
+		model but rather whether advantages of FPGA-based models such as substantial
+		simulation speed improvements are desired over software based approaches.
+		The work is in its final draft and targeted for journal submission early in
+		August this year.
+		
+		The author's primary contribution to this work has centred around the
+		development of a detailed software model of SpiNNaker's interconnection
+		network. In addition, a significant portion of the analysis of the
+		simulators was also carried out. In this section, the simulator, named
+		`Tickysim', is described below along with brief summary of results
+		demonstrating faithfulness to the system it models. The section concludes
+		with plans to use this simulator to guide future research.
+		
 		\subsection{Software simulator model}
 			
 			% Model 18 cores as traffic generators/consumers. Links are modelled as
 			% delay elements (accurately captures req/ack links), internal arbitration
 			% scheme is modelled along with pipelined router.
+			
+			\begin{figure}
+				\begin{subfigure}[b]{0.65\textwidth}
+					\center
+					\tikzexternaldisable
+					\input{figures/tickysim-model}
+					\caption{Model of a SpiNNaker chip. A packet
+					generator and consumer models SpiNNaker's eighteen cores. A tree of
+					packet arbiters mimmicing SpiNNaker's Network on Chip (NoC) feeds a
+					stream of packets into a router model.}
+					\label{fig:tickysim-model-chip}
+				\end{subfigure}
+				~~~~~
+				\begin{subfigure}[b]{0.28\textwidth}
+					\centering
+					\input{figures/link-delays}
+					\vspace{1.8cm}
+					
+					\caption{Delay elements inserted between chips model the effects of
+					link latency.}
+					\label{fig:tickysim-model-link-delays}
+				\end{subfigure}
+				
+				\caption{The Tickysim simulator model.}
+				\label{fig:tickysim-model}
+			\end{figure}
+			
+			The basic unit of the Tickysim simulator model is a high-level of a single
+			SpiNNaker chip which is summarised in figure
+			\ref{fig:tickysim-model-chip}.
+			
+			Since the model focuses on the interconnection network, the eighteen
+			processors present on a SpiNNaker chip are instead modelled by a simple
+			packet generator and consumer. This simplification saves a large amount of
+			simulation overhead at the expense of detail in processor behaviour. Since
+			this is not the focus of the model, this simplification should
+			significantly impact results.
+			
+			The model captures the basic structure of the Network-on-Chip (NoC) within
+			SpiNNaker chips. In particular, streams of packets incident on the chip
+			are merged using a tree structure before entering the on-chip router. The
+			simulated router models a multiple stage pipeline matching that of the
+			actual SpiNNaker router.
+			
+			The complete model consists of a network of chips interconnected by delay
+			elements as illustrated in figure \ref{fig:tickysim-model-link-delays}.
+			These delay elements model the latency encountered by packets crossing a
+			chip-to-chip boundary.
+			
+			The model is extensively instrumented and configurable to allow a range of
+			metrics to be collected and numerous parameters such as buffer sizes,
+			injected traffic patterns and router behaviour to be modified. In
+			addition, the software architecture is structured to allow straightforward
+			extension making it suitable for use in later work.
+			
+			When configured to model a 144-chip SpiNNaker system, the model runs
+			around 7,000 times slower than real time on an Intel Xeon E3-1225 V2
+			running at 3.2 GHz and 32 GB of RAM, the same order of magnitude slow-down
+			experienced by comparable software simulators such as INSEE
+			\cite{navaridas11insee}. Though the model itself is single threaded,
+			parameter-sweep style experiments may be performed in parallel using
+			commodity compute resources. In practice, experiments were conducted using
+			idle department workstations allowing hundreds of parameter settings to be
+			simultaneously simulated in the time taken to run a single simulation on a
+			single machine.
 		
 		\subsection{Results}
 			
 			% Experiments performed showed highly matched behaviour between the model
 			% and SpiNNaker but reveal the effects of the non-homogeneity introduced
 			% by board-to-board links for certain traffic patterns.
+			
+			Experiments were carried out to verify that the simulators bore a close
+			resemblance to the actual SpiNNaker hardware. These consisted of injecting
+			a suite of synthetic traffic patterns at various injection rates and
+			monitoring standard metrics such as number of packets dropped and accepted
+			load (number of packets arriving at their destination).
+			
+			\begin{figure}
+				\begin{subfigure}{\textwidth}
+					\input{figures/plots}
+					\plotresults{144}{cyclic}
+					
+					\caption{`Uniform' traffic.}
+					\label{fig:results-144-accuracy-cyclic}
+				\end{subfigure}
+				
+				\vspace{1em}
+				
+				\begin{subfigure}{\textwidth}
+					\input{figures/plots}
+					\plotresults{144}{complement}
+					
+					\caption{`Complement' traffic.}
+					\label{fig:results-144-accuracy-complement}
+				\end{subfigure}
+				
+				\caption[Packet acceptance and dropping in SpiNNaker
+				and TIckysim.]{Comparison of packet acceptance and dropping rates in
+				SpiNNaker and TIckysim. Values scaled such that 1.0 represents the
+				maximum rate at which packets may pass through a chip-to-chip link.}
+				\label{fig:results-144-accuracy}
+			\end{figure}
+			
+			Figure \ref{fig:results-144-accuracy-cyclic} gives a representative
+			example of the majority results obtained. In this example, a `uniform'
+			traffic pattern was used where nodes produce traffic destined for each
+			node in the system in turn. Both SpiNNaker and the Tickysim model exhibit
+			classic behaviour for this pattern with all traffic being accepted until
+			the network saturates.  Beyond saturation, packets are dropped. Since
+			packets are dropped after a fixed timeout, this increases the time between
+			sending of packets and thus causes the accepted load to drop to a fixed
+			low.
+			
+			\begin{figure}
+				\center
+				\input{figures/spinnaker-heatmaps}
+				\caption{Packet dropping in three board SpiNNaker machine under
+				complement traffic at various injection rates. Thick lines show boundaries
+				between boards in the system.}
+				\label{fig:heatmap-spinnaker-complement}
+			\end{figure}
+			
+			Some traffic patterns such as `complement', however, exhibited artefacts
+			in SpiNNaker due to the prototype implementation of the HSS links between
+			boards not being able to achieve full bandwidth. Since the difference due
+			to these links is not modelled by Tickysim, their results clearly differ.
+			Figure \ref{fig:results-144-accuracy-complement} demonstrates this effect
+			in the form of two distinct phases of saturation in SpiNNaker but just one
+			in Tickysim. In this pattern, distinct clusters of communicating nodes
+			occur in the network. In SpiNNaker, those clusters crossing board
+			boundaries saturate first due to their lower bandwidth followed later by
+			the native chip-to-chip links causing the two phases as shown in figure
+			\ref{fig:heatmap-spinnaker-complement}.
 		
 		\subsection{Further work}
 			
 			% Plans to include models of SpiNNaker links. Preliminary trials at
 			% accurately modelling these have been unsuccessful. Will be used to guide
 			% work on these links.
+			
+			Work is planned to more accurately model the behaviour of board-to-board
+			links within Tickysim to allow its use in evaluating the utility of small
+			world connectivity. Preliminary, simplistic attempts to model
+			board-to-board links as simply having longer latencies have been
+			unsuccessful. It is suspected that the mechanisms used within the HSS
+			links are the underlying root of the problem.
 	
 	
 	\section{SpiNNaker FPGA connectivity}
@@ -94,35 +559,141 @@
 		% Work started at CapoCaccia with input from various parties to get
 		% SpiNNaker peripherals working. The start of a project to get peripherals
 		% properly integrated and generally add some routing smarts to the FPGAs
-			
+		
+		At the 2014 Capo Caccia Neuromorphic Workshop requirements for extending the
+		HSS links available within SpiNNaker for connecting peripherals and to host
+		computers for the purposes of loading neural models and extracting results.
+		As a result of these discussions, work began to extend the existing
+		infrastructure used for board-to-board links to support flexible additional
+		connectivity. This work has concentrated on the development of FPGA designs
+		to support tasks such as routing packets to and from peripherals and hosts
+		and the integration of HSS links operating at different speeds.
+		
+		This section outlines the existing infrastructure followed by a description
+		of the extensions developed and how they address the requirements proposed
+		at the workshop. The section concludes with planned future work which builds
+		on the infrastructure developed.
+		
 			\subsection{Existing infrastructure}
 				
 				% Description of what exists already in the board-to-board links,
 				% outline the protocol's principles. Also describe the rdy/vld
 				% interface.
+				
+				\begin{figure}
+					\center
+					\input{figures/existing-fpga-links}
+					
+					\caption[Existing board-to-board link FPGA design.]{Existing
+					board-to-board link FPGA design. Each FPGA contains two independent
+					copies of this design so that the three FPGAs on each board can
+					implement all six board-to-board links.}
+					\label{fig:existing-fpga-links}
+				\end{figure}
+				
+				The existing board-to-board links are implemented within the FPGAs on
+				SpiNNaker boards. Each HSS link is designed to transparently replace
+				eight chip-to-chip SpiNNaker links. The design, as shown in figure
+				\ref{fig:existing-fpga-links} contains three basic elements. A 2-of-7
+				block translates between the asynchronous 2-of-7 protocol used by
+				SpiNNaker chip links and a synchronous protocol used within the FPGA
+				design. The next block assembles and disassembles `frames' containing
+				SpiNNaker packets and ensures reliable communication by verifying
+				incoming frames and retransmitting frames if required. The final block
+				is provided as `hard IP' rather than soft programmable FPGA logic and
+				serialises and deserialises frames over the HSS link.
+				
+				\begin{figure}
+					\center
+					\begin{tikzpicture}[thick]
+						\input{|"wavedromtikz.py wavedrom figures/rdyvld-protocol.drom"}
+					\end{tikzpicture}
+					
+					\caption{Example of the ready/valid protocol.}
+					\label{fig:rdyvld-protocol}
+				\end{figure}
+				
+				Within and between blocks, data is transferred using a simple
+				point-to-point `ready/valid' protocol illustrated in figure
+				\ref{fig:rdyvld-protocol}.  The receiever asserts a `ready' signal
+				whenever it is able to accept new data. The sender places data it wishes
+				to send on a data bus while asserting a `valid' signal. If the valid and
+				ready signals are simultaneously asserted on the next rising edge of the
+				clock, the data is considered received. This protocol allows a value to
+				be transmitted up-to every clock cycle while allowing both the sender
+				and receiver control over the rate that data flows.
 			
-			\subsection{Extension peripherals}
+			\subsection{Proof-of-Concept I/O Device}
 				
 				% Describe principle of how a router will be integrated and streams
 				% merged.
-			
-			\subsection{Proof-of-concept `spiking button' peripheral}
 				
-				% Describe the demo and hardware used
+				To allow extension of the existing board-to-board system, the
+				ready/valid protocol described above, with the databus being the width
+				of a long SpiNNaker packet (70 bits) has been standardised for
+				communication between new blocks.
 				
-				\subsubsection{Handling multiple link speeds}
+				\begin{figure}
+					\center
+					\input{figures/proof-of-concept-fpga-links}
 					
-					% Streams of packets being produced at different speeds due to slower
-					% peripheral FPGA board. Describe the interface's role, outline the
-					% mechanism and avoidance of buffering.
+					\caption[Proof-of-concept low-speed I/O system.]{Proof-of-concept
+					low-speed I/O system. A spare HSS link from an FPGA on a SpiNNaker
+					board connects to a Raggedstone 2 board connected to a host PC.}
+					\label{fig:proof-of-concept-fpga-links}
+				\end{figure}
 				
-				\subsubsection{Merging packet streams}
-					
-					% Again, describe the problem, and the challenges of doing this
-					% without losing throughput.
+				Based on the ready/valid standard, a number of basic components for
+				extending the existing design were produced. Using these components, a
+				simple proof of concept low-speed host connection was developed and is
+				sketched in figure \ref{fig:proof-of-concept-fpga-links}. In this
+				system, A SpiNNaker board is connected to an off-the-shelf Raggedstone 2
+				FPGA development baord \cite{raggedstone2} using a spare S-ATA
+				connector. A host PC then connects to the Raggedstone 2 via an onboard
+				FTDI USB-to-UART (Universal Asynchronous Receiver/Transmitter) converter
+				providing a simple to drive, low speed (2.3 Mbit/s) connection over
+				which SpiNNaker packets can be transmitted.
+				
+				A router is added to the SpiNNaker FPGA design which is able to route a
+				stream of packets from the incoming SpiNNaker chips either along their
+				usual board-to-board connection or to the Raggedstone 2 board, or both.
+				Packets are routed using the same key and mask mechanism used within a
+				SpiNNaker chip, though only one key and mask is available, rather than
+				1,024. Packets routed to the Raggedstone 2 board are transmitted via the
+				same HSS link protocol as board-to-board links.
+				
+				On the Raggedstone 2 board, one of the eight streams of packets is fed
+				to a UART block which uses a simple protocol to send and receive
+				SpiNNaker packets at low speed to a host PC. The UART connection of the
+				host is the bottleneck in the system, the router within the SpiNNaker
+				FPGAs introduces 13 ns of additional latency but with no throughput
+				cost.
+				
+				This proof-of-concept device has been successfully integrated into the
+				SpiNNaker implementation of Nengo where it can be used to transmit
+				values in and out of a model in real time. Despite its low bandwidth,
+				the link carries raw SpiNNaker packets with no protocol overheads and
+				actually performs favourably compared to the current Ethernet
+				implementation in SpiNNaker's Nengo implementation which suffers
+				extremely large protocol overheads.
 			
 			\subsection{Further work}
 				
 				% Next steps will involve getting basic routing up and running, then on
 				% to my planned project, see next chapter.
-	
+				
+				With the basic infrastructure in place for implementing custom routing
+				schemes and using additional HSS links within SpiNNaker's FPGAs in
+				place, it is now possible to use this to develop high speed peripheral
+				and host connectivity. In addition, this infrastructure allows for the
+				addition of axillary links between boards allowing the implementation of
+				small-world network connectivity.
+				
+				In collaboration with researchers at the Technical University of Munich,
+				a small board containing an FPGA with both a HSS link and a USB 3.0 link
+				is being developed. This board's FPGA could be loaded with a design very
+				similar to that developed for the Raggedstone 2 but with the UART block
+				replaced with a USB 3.0 block. Using this board, it is hoped that very
+				high bandwidth communication between a host and SpiNNaker machine should
+				become possible.
+

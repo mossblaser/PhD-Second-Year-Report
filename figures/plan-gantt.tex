@@ -1,0 +1,120 @@
+\begin{tikzpicture}[thick,x=0.25cm]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hacked-up Gantt Library
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% An entry in the Gantt chart. Takes a label, start offset, length and slack.
+% Also defines a pair of labels "[label] start" and "[label] end" which can be
+% used for drawing dependency lines.
+\newcommand{\ganttEntry}[4]{
+	% Label
+	\node (label)
+				[below=1.5ex of label.south east,anchor=east,minimum height=1.7em]
+				{#1}
+				;
+	\coordinate (gantt labels end) at (label.south east);
+	
+	% Box
+	\draw [fill=white]
+	      ([shift={(#2   ,-.9ex)}]label.north east) rectangle
+	      ([shift={(#2+#3,0.9ex)}]label.south east);
+	
+	% The tips of the box
+	\coordinate (#1 end)
+	         at ([shift={(#2+#3,0.9ex)}]label.south east);
+	\coordinate (#1 start)
+	         at ([shift={(#2   ,-.9ex)}]label.north east);
+	
+	% Slack line
+	\draw [ultra thick]
+	      ([shift={(#2+#3,0)}]$(label.north east)!0.5!(label.south east)$)
+	   -- ++(#4,0);
+}
+
+\newcommand{\ganttDep}[2]{
+	\draw [->,red] (#1 end) -| (#2 start);
+}
+
+\newcommand{\ganttVSep}[2]{
+	\draw [#2] ([shift={(#1,0)}]gantt labels start) -- ([shift={(#1,0)}]gantt labels end);
+}
+
+% A new gantt chart. Takes a list of x-offset/label/major-label tuples. For each
+% tuple a line is created with x-offset from the previous line and the span is
+% labelled with "label". If major-label given, a major label will be drawn
+% centered over the previous entries up until the last major-label.
+\newenvironment{gantt}[1]{
+	% Start the list of labels
+	\node (label) [white] {Ag};
+	\coordinate (gantt labels start) at (label.north east);
+	\def\periods{#1}
+}{
+	\begin{scope}[on background layer]
+		% Thick line separating from labels
+		\draw (gantt labels start) -- (gantt labels end);
+		
+		% Start of the area covered by a "major" label
+		\coordinate (gantt maj label start) at (gantt labels start);
+		
+		\foreach \x/\lab/\mlab in \periods {
+			\coordinate (next gantt labels start) at ([shift={(\x,0)}]gantt labels start);
+			\coordinate (next gantt labels end)   at ([shift={(\x,0)}]gantt labels end);
+			
+			% Minor label
+			\node at ($(gantt labels start) !0.5! (next gantt labels start)$)
+			      [anchor=west,rotate=90]
+			      {\lab}
+			      ;
+			
+			% Separator
+			\ifthenelse{\equal{\mlab}{}}{
+				\draw [help lines] (next gantt labels start) -- (next gantt labels end);
+			}{
+				\draw [help lines,thick] (next gantt labels start) -- (next gantt labels end);
+			}
+			
+			\coordinate (gantt labels start) at (next gantt labels start);
+			\coordinate (gantt labels end)   at (next gantt labels end);
+			
+			% Major label
+			\ifthenelse{\equal{\mlab}{}}{}{
+				\coordinate (next gantt maj label start) at (gantt labels start);
+				\node at ($(gantt maj label start) !0.5! (next gantt maj label start)$)
+				      [yshift=1cm,anchor=south]
+				      {\mlab}
+				      ;
+				\coordinate (gantt maj label start) at (next gantt maj label start);
+			}
+		}
+	\end{scope}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Chart...
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{gantt}{
+	4/Sep/, 4/Oct/, 4/Nov/, 4/Dec/2014,%
+	3/Q1/, 3/Q2/, 3/Q3/, 3/Q4/2015,%
+	3/Q1/, 3/Q2/2016%
+}
+	\ganttEntry{Nengo Network Experiments}       {0}{4}{8}
+	\ganttEntry{Small-World Modelling}           {0}{4}{2}
+	\ganttEntry{Small-World HSS Impelementation} {4}{8}{4}
+	\ganttEntry{Small-World Benchmarking}        {10}{6}{1}
+	\ganttEntry{USB 3.0 Interface}               {16}{2}{2}
+	\ganttEntry{HSS Power Management}            {16}{5}{2}
+	\ganttEntry{Power Management Benchmarking}   {21}{3}{1}
+	
+	\ganttEntry{Thesis Writing}     {24}{8}{2}
+	
+	\ganttDep{Small-World Modelling}{Small-World HSS Impelementation}
+	\ganttDep{Nengo Network Experiments}{Small-World Benchmarking}
+	\ganttDep{Small-World HSS Impelementation}{HSS Power Management}
+	\ganttDep{HSS Power Management}{Power Management Benchmarking}
+\end{gantt}
+
+\end{tikzpicture}

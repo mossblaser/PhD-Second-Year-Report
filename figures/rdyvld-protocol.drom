@@ -1,6 +1,6 @@
 {
   signal: [
-    { name : "CLock", wave : "p....|.." },
+    { name : "Clock", wave : "p....|.." },
     { name : "Data",  wave : "x===.|.x", data: "a b c" },
     { name : "Valid", wave : "01...|.0" },
     { name : "Ready", wave : "1..0.|1." },
