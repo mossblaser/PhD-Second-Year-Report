@@ -1,6 +1,7 @@
 \begin{tikzpicture}[thick]
 	\pgfmathsetlengthmacro{\routeroffset}{2em}
 	\pgfmathsetlengthmacro{\routerheight}{2em}
+	\pgfmathsetlengthmacro{\fpgagroupoffset}{1em}
 	
 	\def\boardoffset{3}
 	
@@ -72,6 +73,39 @@
 					\draw (x\tbxoff y\tbyoff z\colour fpgasouth left)      -- (x\tbxoff y\tbyoff z\colour fpgaeast right);
 					%\draw (x\tbxoff y\tbyoff z\colour fpgaeast left)       -- (x\tbxoff y\tbyoff z\colour fpganorth east right);
 					\draw (x\tbxoff y\tbyoff z\colour fpganorth east left) -- (x\tbxoff y\tbyoff z\colour fpganorth right);
+					
+					% Draw boxes around links shared by an FPGA
+					\foreach \lfpga/\rfpga in {south west /west ,east /south ,north /north east }{
+						\draw [dotted,thick,rounded corners=0.25*\fpgagroupoffset]
+						      % Right FPGA:
+						        % Bottom left
+						        ($(x\tbxoff y\tbyoff z\colour fpga\rfpga p0)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\rfpga p3)$)
+						        % Bottom right
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\rfpga p1)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\rfpga p2)$)
+						        % Right bottom
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\rfpga p1)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\rfpga p0)$)
+						        % Right top
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\rfpga p2)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\rfpga p3)$)
+						        % Top right
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\rfpga p2)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\rfpga p1)$)
+						        % Top left
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\rfpga p3)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\rfpga p0)$)
+						      % Left FPGA:
+						        % Top right
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\lfpga p2)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\lfpga p1)$)
+						        % Top left
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\lfpga p3)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\lfpga p0)$)
+						        % Left top
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\lfpga p3)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\lfpga p2)$)
+						        % Left bottom
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\lfpga p0)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\lfpga p1)$)
+						        % Bottom left
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\lfpga p0)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\lfpga p3)$)
+						        % Bottom right
+						   --   ($(x\tbxoff y\tbyoff z\colour fpga\lfpga p1)!-\fpgagroupoffset!(x\tbxoff y\tbyoff z\colour fpga\lfpga p2)$)
+						   -- cycle
+						      ;
+					}
 				}
 			}
 		}

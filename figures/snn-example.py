@@ -7,17 +7,18 @@ neuron, the charge intergrated in it and the spikes it produces.
 
 import random
 
-random.seed(10)
+random.seed(12)
 
-WIDTH = 8
+WIDTH = 9
 HEIGHT = 1.4
 
-DURATION = 100
+DURATION = 200
 SPIKE_PROB = 0.15
 
-THRESHOLD    = 1
-SPIKE_CHARGE = 0.4
-DECAY        = 0.90
+THRESHOLD     = 1
+SPIKE_CHARGE  = 0.4
+DECAY         = 0.95
+SYNAPSE_DECAY = 0.20
 
 # A list of bools saying whether a spike is emitted at this time step
 spikes = [(t%2 or random.random()) < SPIKE_PROB for t in range(DURATION)]
@@ -26,10 +27,15 @@ spikes = [(t%2 or random.random()) < SPIKE_PROB for t in range(DURATION)]
 charges = [0]
 out_spikes = [False]
 new_charge = charges[0]
+current = 0.0
 for time, spike in enumerate(spikes):
 	new_charge *= DECAY
+	
+	current *= SYNAPSE_DECAY
 	if spike:
-		new_charge += SPIKE_CHARGE
+		current += SPIKE_CHARGE
+	
+	new_charge += current
 	
 	charges.append(new_charge)
 	

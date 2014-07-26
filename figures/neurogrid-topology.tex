@@ -1,7 +1,8 @@
-\begin{tikzpicture}[thick]
+\begin{tikzpicture}[thick,xscale=0.9]
 	
-	\pgfmathsetlengthmacro{\layersep}{-1.3cm}
-	\pgfmathsetlengthmacro{\chipsize}{0.8cm}
+	\pgfmathsetlengthmacro{\layersep}{-1.0cm}
+	\pgfmathsetlengthmacro{\chipsize}{0.7cm}
+	\pgfmathsetlengthmacro{\textsep}{0.1cm}
 	
 	% A neurocore chip/tree element. Arguments:
 	%  #1 ID
@@ -15,9 +16,9 @@
 		      ]
 		      {};
 		
-		\node (#1 t label) [below      =0 of #1.north]      {\tiny{}T};
-		\node (#1 l label) [above right=0 of #1.south west] {\tiny{}L};
-		\node (#1 r label) [above left =0 of #1.south east] {\tiny{}R};
+		\node (#1 t label) [inner sep=\textsep,below      =0 of #1.north]      {\tiny{}T};
+		\node (#1 l label) [inner sep=\textsep,above right=0 of #1.south west] {\tiny{}L};
+		\node (#1 r label) [inner sep=\textsep,above left =0 of #1.south east] {\tiny{}R};
 		
 		\coordinate (#1 t) at (#1 t label.north);
 		\coordinate (#1 l) at (#1 l label.south);
