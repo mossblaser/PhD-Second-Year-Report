@@ -8,4 +8,58 @@
 	% faced by existing systems.
 	%
 	% TODO: Finish-off.
+	
+	The brain is one of the least understood entities in science and despite vast
+	interest and intense research still largely remains a mystery. Models of brain
+	function have grown increasingly sophisticated both in their detail and sheer
+	scale.
+	
+	Though conventional supercomputers have continued to answer to the needs of
+	certain classes of neural simulations, large scale models based on simple
+	neurons have spawned a range of special purpose simulation platforms to
+	support their needs. These `neuromorphic' systems aim to provide a balance of
+	computational power and communication capacity which better suit large scale
+	spiking neural networks. Neuromorphic devices typically implement specialised
+	network interconnect which support efficient multicast communication of
+	extremely small messages.
+	
+	SpiNNaker is a neuromorphic system which combines large numbers of small,
+	mobile-phone grade computer processors and combines them with a specially
+	designed interconnection network. In small scale, single-board SpiNNaker
+	prototypes, all communication between chips in the system used an low-power
+	asynchronous protocol. As the system has been scaled up to multiple boards,
+	new interconnect based on HSS links has been introduced to make
+	interconnecting boards in large systems practical.
+	
+	Preliminary work has explored the capabilities of HSS link technology, using
+	SpiNNaker as a case study. The results of this exploration include a tool and
+	methodology for designing the wiring required for large SpiNNaker systems
+	while adhering to constraints on wire length imposed by HSS technology. As a
+	result of this work, a novel method of augmenting SpiNNaker's board-to-board
+	links to form a small-world network was presented. This inexpensive
+	augmentation has the potential to both improve the throughput and latency of
+	the SpiNNaker interconnect and also save power.
+	
+	To support this work, an interconnection network simulator for SpiNNaker has
+	been built and verified within which the benefits and effects of small-world
+	connectivity may be evaluated. In addition, work has commenced to build the
+	foundations for implementing such extensions to SpiNNaker's HSS link hardware.
+	
+	Upcoming work will aim to realise and evaluate extensions to SpiNNaker's HSS
+	links. The evaluation of this work will be based on a suite of both `real' and
+	synthetic large-scale neural models using the NEF.  The initial construction
+	of this suite of benchmarks will, in itself, offer a contribution to the
+	understanding of the network behaviour of neural networks within SpiNNaker.
+	
+	It is planned that a small-world networking scheme will be developed based on
+	the results of simulation work. Since one of the aims of this work is to
+	reduce load in the system, a complementary line of research is also planned to
+	develop methods for reducing power consumption due to underutilised HSS links.
+	
+	It is hoped that this research will both advance the abilities of the existing
+	SpiNNaker platform while also paving the way towards improving the way HSS
+	links are used within neural simulators. With future versions of SpiNNaker
+	being likely to make use of HSS at every level of its network, its effective
+	use may be guided by this work.
+	
 
