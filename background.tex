@@ -2,7 +2,7 @@
 	
 	\label{sec:background}
 	
-	This chapter aims to familliarise the reader with the principles of neural
+	This chapter aims to familiarise the reader with the principles of neural
 	modelling and the challenges involved in simulating these models at biological
 	scales and speeds. An overview is given of the current state-of-the-art of
 	supercomputer technology and their suitability for neural modelling. This is
@@ -144,14 +144,14 @@
 			
 			Given that the human brain contains around 100 billion ($10^9$) neurons
 			each with around 10,000 synapses, this constitutes a non-trivial amount of
-			of computation. In order to maintain real-time performance, the simulation
+			of computation. In order to maintain realtime performance, the simulation
 			of different neurons must be distributed across a large number of
 			processing cores.
 		
 		\subsection{Communication}
 			
 			% Number of spikes produced, the form that spikes take, multicast,
-			% possible changes due to learning. Especially fun for real-time.
+			% possible changes due to learning. Especially fun for realtime.
 			
 			% spiking at an average rate of 10 Hz
 			
@@ -533,7 +533,7 @@
 				wafer into individual reticles, space between the reticles is used to
 				build an interconnection network to yield a single large system. A
 				system built from a single wafer is able to simulate a network of around
-				200,000 neurons up to $10^5$ times faster than biological real-time
+				200,000 neurons up to $10^5$ times faster than biological realtime
 				while using 6,000 times less power than a conventional supercomputer
 				\cite{schemmel08}.
 				
@@ -591,7 +591,7 @@
 				The Neurogrid architecture consists of a tree of 16 `Neurocore' chips.
 				Each Neurocore contains a grid of $256 \times 256$ analogue neuron
 				models with a modest number of tunable parameters and which run at
-				biological real-time. The full 16-Neurocore system can simulate around 1
+				biological realtime. The full 16-Neurocore system can simulate around 1
 				million neurons using around three watts \cite{benjamin14}.
 				
 				When spikes are produced these are transmitted via a digital network to
@@ -730,7 +730,7 @@
 				are combined onto a single SpiNNaker chip which are grouped into boards
 				which are assembled into cabinets which will eventually make up a
 				machine with 1,036,800 cores capable of simulating around 1 billion
-				neurons in biological real time.  At the time of writing, a
+				neurons in biological realtime.  At the time of writing, a
 				$\frac{1}{10}^{\textrm{th}}$ scale system is being assembled with
 				103,680 cores with boards for a full scale system currently being
 				manufactured and tested.
@@ -808,7 +808,7 @@
 			In typical spiking neural applications the payload field isn't required
 			meaning that all packets sent are only 40 bits long. A neural spike event
 			contains only two pieces of information: the identity of the neuron that
-			fired and the time that it occurred. Since SpiNNaker operates in real-time
+			fired and the time that it occurred. Since SpiNNaker operates in realtime
 			and the network is designed to deliver packets within a single simulation
 			time-step, the time of the spike is implied by the time of the packets'
 			arrival. This simply leaves the neuron's identity which is also used as a
