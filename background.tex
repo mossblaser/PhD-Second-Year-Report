@@ -210,18 +210,18 @@
 				\bottomrule
 			\end{tabular}
 			
-			\caption{Top Five `Top500' Super-Computers, June 2014.}
+			\caption{Top Five `Top500' Supercomputers, June 2014.}
 			\label{tab:top500}
 		\end{table}
 		
 		The Top500 list \cite{meuer14j} aims to enumerate, biannually, the 500
-		fastest super-computers in the world ranked by their performance on the
+		fastest supercomputers in the world ranked by their performance on the
 		LINPACK benchmark \cite{dongarraLINPAC}. The list offers an insight into the
 		current state-of-the-art for high-performance computing. Table
 		\ref{tab:top500} shows the top five machines in the Top500 list released in
-		June 2014 along with basic details of the type of interconnection
-		involved. In this section an overview is given of the architecture of these
-		large scale machines.
+		June 2014 along with basic details of the type of interconnection involved.
+		In this section an overview is given of the architecture of these large
+		scale machines.
 		
 		The LINPACK benchmark performs computations to ``analyze and solve linear
 		equations and linear least-squares problems'' to produce a computational
@@ -236,7 +236,7 @@
 		Since simulation of spiking neural networks requires a large amount of
 		communication but relatively small amounts of computation, this benchmark is
 		clearly not representative of the workload of such a task.  In fact, many
-		modern super-computer workloads also rely on network performance to a
+		modern supercomputer workloads also rely on network performance to a
 		greater degree than the LINPACK benchmarks and as a result a new ranking,
 		Graph500 \cite{murphy13n}, has appeared to address this shortcoming. This
 		complementary ranking instead uses benchmarks based on graph traversal
@@ -280,14 +280,14 @@
 		
 		\subsection{Interconnect}
 			
-			In this subsection, the general structure and function of super computer
+			In this subsection, the general structure and function of supercomputer
 			interconnection networks is described, beginning with details of the
 			high-level topology of the system and moving towards the low-level
 			functions of the routers and link technologies used.
 			
 			\subsubsection{Topology}
 				
-				% Topology has influence on structure of the system, super computers are
+				% Topology has influence on structure of the system, supercomputers are
 				% optimised for local access of data near by. Two topologies are
 				% popular: trees and tori.
 				%
@@ -414,13 +414,13 @@
 			
 			\subsubsection{Link technology}
 				
-				Interconnect in modern super computers is made up almost exclusively of
+				Interconnect in modern supercomputers is made up almost exclusively of
 				High-Speed Serial (HSS) links (see \S\ref{sec:high-speed-serial}) running
 				over either electrical or optical connections. Electrical transmission
 				technologies are generally much cheaper than optical for short distances
 				and lower bandwidths. As a result connections between physically
 				neighbouring nodes are almost universally connected via such links.
-				Optical links, however, are favoured by super computer designs between
+				Optical links, however, are favoured by supercomputer designs between
 				cabinets containing many individual nodes in systems such as Blue Gene/Q
 				and Tianhe-2 \cite{dongarra13,prickett10}.  These optical links are
 				typically used to carry the equivalent of many electrical signals and
@@ -441,7 +441,7 @@
 			
 			\subsubsection{Packet formatting}
 				
-				Super-computer networks are generally designed to handle the transfer of
+				Supercomputer networks are generally designed to handle the transfer of
 				large bursts of data on the order of several kilobytes in length making
 				use of technologies such as Message Passing Interface (MPI)
 				\cite{mpiforum12}. Since every MPI message must contain a header
@@ -457,7 +457,7 @@
 				flow control. Each packet can contain up to 4,096 bytes of payload
 				meaning the overhead can be as low as 2.8\% protocol overhead.
 				
-				This pattern of communication matches many super computer applications
+				This pattern of communication matches many supercomputer applications
 				as is reflected by the prominence of array and matrix functions in
 				parallel programming APIs such as MPI. Unfortunately, this is a poor
 				match for neural simulations which may transmit only a single 32-bit
@@ -534,7 +534,7 @@
 				build an interconnection network to yield a single large system. A
 				system built from a single wafer is able to simulate a network of around
 				200,000 neurons up to $10^5$ times faster than biological real-time
-				while using 6,000 times less power than a conventional super-computer
+				while using 6,000 times less power than a conventional supercomputer
 				\cite{schemmel08}.
 				
 				Each reticle in the wafer contains eight Analog Neural-Network Chips
@@ -932,7 +932,7 @@
 	\section{High-Speed Serial (HSS)}
 		\label{sec:high-speed-serial}
 		
-		% Technology now used by most super computers and high-speed comms tasks.
+		% Technology now used by most supercomputers and high-speed comms tasks.
 		% More complex than parallel but they scale up throughput better.
 		
 		\begin{figure}

@@ -13,17 +13,17 @@
 	large SpiNNaker systems which accounts for the properties of HSS interconnect
 	technology. This is followed by a discussion of an extension to the network
 	which exploits this wiring scheme to inexpensively transform the network into
-	a small world network with improved latency.  As part of an effort to validate
+	a small-world network with improved latency.  As part of an effort to validate
 	potential changes to the network, a model of SpiNNaker's interconnection
 	network has been built. A brief description of this work is included along
 	with details of collaborative work to develop new modelling techniques.  The
 	chapter concludes with an overview of extensions being made to the existing
 	HSS board-to-board links within SpiNNaker which will form the foundations of
-	an implementation of small world networking.
+	an implementation of small-world networking.
 	
 	\section{SpiNNaker machine wiring}
 		
-		% Constraint of electrical high-speed-serial is that long wires are not
+		% Constraint of electrical high-speed serial is that long wires are not
 		% allowed. For tori, this is a problem due to wrap-around.
 		
 		Electrical HSS links impose restrictions on the maximum length of cables. In
@@ -209,7 +209,7 @@
 	
 	\section{Small-world networks}
 		
-		% Small world networks are: ... Allow lots of short paths, this means low
+		% Small-world networks are: ... Allow lots of short paths, this means low
 		% latency, low power and less contention. We describe ways of augmenting the
 		% SpiNNaker network, making use of spare connections and resource for
 		% board-to-board links while taking advantage of the physical arrangement
@@ -221,7 +221,7 @@
 		of connections. They also contain `clusters' of well connected nodes, in
 		contrast with random graphs (which may also fulfil the first criterion).
 		
-		Small world networks are often found in nature, perhaps most famously in
+		Small-world networks are often found in nature, perhaps most famously in
 		social networks. In this context, the phenomenon was first observed in 1929
 		by Hungarian author Frigyes Karinthy\cite{karinthy29} and the idea has
 		become popularly known as the theory of `six degrees of separation'. The
@@ -231,7 +231,7 @@
 		This property of maintaining low maximum shortest-path length while still
 		remaining locally well connected is desirable for certain computational
 		problems. In neural simulations, most communication is local with just a few
-		longer connections. The clustering property of small world networks means
+		longer connections. The clustering property of small-world networks means
 		these local connections can be well catered for while the low maximum
 		shortest-path length means longer connections are still quick for very large
 		models.

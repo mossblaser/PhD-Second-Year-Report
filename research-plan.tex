@@ -104,7 +104,7 @@
 		In order to exploit the benefits of small-world network topologies, work
 		will be carried out to attempt to implement them within SpiNNaker's
 		board-to-board interconnection network. Work will begin by extending the
-		Tickysim network simulator with small world connectivity and a model of
+		Tickysim network simulator with small-world connectivity and a model of
 		SpiNNaker's board-to-board links. Guided by these simulation results, this
 		will be followed by an implementation in SpiNNaker.  This implementation
 		will then be evaluated using the Nengo benchmarks described previously.
@@ -137,7 +137,7 @@
 			approach is adequate here because generally there will be only a few I/O
 			devices in a system compared with the number of neurons and so it is
 			feasible to allocate a bit out of all routing keys to indicate such
-			packets.  For small world networks, however, allocating a bit in the key
+			packets.  For small-world networks, however, allocating a bit in the key
 			space to indicate when each small-world link should be used would require
 			more bits than available in routing keys due to the greater number of
 			small-world links.
@@ -248,7 +248,7 @@
 		speed at all times, even when no traffic is present, potentially wasting a
 		significant amount of energy. While numerous techniques for power managing
 		HSS technologies exist, these tend to be optimised toward more conventional
-		super computer loads.
+		supercomputer loads.
 		
 		In general, power savings are achieved either by powering down idle or
 		underutilised links or by running them at low speeds. These techniques
