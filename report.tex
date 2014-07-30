@@ -44,7 +44,8 @@
 % When adding a border around some text, this is how thick it should be.
 \contourlength{1.5pt}
 
-\title{An Improved Interconnection Network for the Next Generation of Brain Simulator}
+\title{An Improved Interconnection Network for the Next Generation of Brain
+Simulators}
 \author{Jonathan Heathcote}
 \date{The University of Manchester}
 \date{Draft \today}
@@ -58,20 +59,29 @@
 	
 	\begin{abstract}
 		
-		Many attempts to understand the vast complexity of the brain centre on
+		Many attempts to understand the vast complexity of the human brain centre on
 		simulating models of its behaviour. Conventional super-computers have failed
 		to provide the necessary power to execute large-scale models of the brain's
 		function leading to the development of special purpose `neuromorphic'
-		hardware.
+		hardware such as SpiNNaker.
 		
 		This project aims to advance the way in which high-speed serial (HSS)
-		technology is used in neural simulation systems. The SpiNNaker neural
-		simulator features extensive use of HSS links in its interconnect and is
-		used as both a platform and a case-study for this work. Preliminary work has
-		yielded a novel extension to SpiNNaker's network which exploits the complex
-		wiring schemes used in its construction.  Upcoming work is intended to
-		implement these extensions within the actual SpiNNaker hardware as well as
-		incorporating complementary power management schemes.
+		technology is used in neural simulation systems. SpiNNaker, like other
+		neural simulators, is beginning to exploit HSS links in parts of its
+		interconnection network and future versions may move entirely to HSS-based
+		networks.
+		
+		Preliminary work has tackled practical issues involved in the wiring of
+		large machines using HSS interconnect and developed a simple extension which
+		can deliver lower latency and higher throughput with little additional
+		wiring cost. Additionally, accurate models of SpiNNaker's interconnect were
+		built which will be used to verify these extensions prior to trail
+		implementation in SpiNNaker.
+		
+		Work is proposed to develop power management strategies for HSS links which
+		are appropriate for neural simulations. Such simulations may have hard
+		latency requirements which existing HSS power management schemes don't meet.
+		These changes will be validated within existing SpiNNaker hardware.
 		
 	\end{abstract}
 	
