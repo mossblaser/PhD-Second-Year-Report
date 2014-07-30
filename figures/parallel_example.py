@@ -21,7 +21,7 @@ corrupt_msg_bits = [ [ ([0]+msg_bits[char_num]+[0])[bit_num + int(round(offset))
                        for bit_num, offset in enumerate(offsets)
                      ] for char_num in range(len(msg))
                    ]
-corrupt_msg = "".join( chr(sum(b<<i for i,b in enumerate(char_bits)))
+corrupt_msg = "".join( repr(chr(sum(b<<i for i,b in enumerate(char_bits))))[1:-1]
                        for char_bits in corrupt_msg_bits
                      )
 
@@ -29,12 +29,14 @@ corrupt_msg = "".join( chr(sum(b<<i for i,b in enumerate(char_bits)))
 # Print out waveforms
 for bit_num, offset in enumerate(offsets):
 	print(
-		r"\waveform{bit %d}{Bit %d}{%s}{%s}{%f}"%(
+		r"\waveform{bit %d}{Bit %d}{%s}{%s}{%f}{%f}{%d}"%(
 			bit_num,
 			bit_num,
 			"above=of bit %d"%(bit_num-1) if bit_num > 0 else "",
-			",".join( str(char[bit_num]) for char in msg_bits),
+			",".join(str(char[bit_num]) for char in msg_bits),
 			offset,
+			max_offset,
+			msg_bits[0][bit_num],
 		)
 	)
 

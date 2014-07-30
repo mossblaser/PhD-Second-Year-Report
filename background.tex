@@ -5,7 +5,7 @@
 	This chapter aims to familiarise the reader with the principles of neural
 	modelling and the challenges involved in simulating these models at biological
 	scales and speeds. An overview is given of the current state-of-the-art of
-	supercomputer technology and their suitability for neural modelling. This is
+	supercomputer technologies and their suitability for neural modelling. This is
 	followed by an introduction to specialised `neuromorphic' systems which
 	specifically target neural simulation tasks and overcome the limitations of
 	current supercomputers. Finally, the chapter covers the interconnection
@@ -17,8 +17,8 @@
 		% What is done, for what purpose
 		
 		The brain is an extremely complex and variable organ whose high-level
-		behaviours are similarly complex and variable. Unsurprisingly, efforts to
-		understand the brain, rely heavily on simplified models of its function and
+		behaviour is similarly complex and variable. Unsurprisingly, efforts to
+		understand the brain rely heavily on simplified models of its function and
 		implementation. Modelling approaches cover a wide spectrum from extremely
 		detailed models of the neurophysiology of individual neurons
 		\cite{carnevale06} to high level models where mathematical functions are
@@ -34,20 +34,20 @@
 			coarse generations, each increasing their level of biological realism
 			\cite{vainbrand11}.
 			
-			The first generation of models, such as the McCulloch-Pitts threshold neuron
-			\cite{mcculloch43}, consisted of testing if a simple, linear function of
-			the neuron's inputs was above a threshold value and outputting either a
-			`high' or `low' signal. The function used in each neuron and the pattern
-			of connectivity in the network define the behaviour of the network as a
-			whole.
+			The first generation of models, such as the McCulloch-Pitts threshold
+			neuron \cite{mcculloch43}, consisted of testing if a simple, linear
+			function of the neuron's inputs was above a threshold value and outputting
+			either a `high' or `low' signal. The function used in each neuron and the
+			pattern of connectivity in the network defines the behaviour of the
+			network as a whole.
 			
 			It was noted that communication between biological neurons was not simply
 			level-based but instead appeared to be based on the rate at which
 			electrical `spikes' were emitted (or `fired') by neurons to their
-			neighbours. The second generation sought to model this by representing the
-			output of a neuron as a continuous value \cite{maass97}. Once again, the
-			network's behaviour was defined by the functions computed by each neuron
-			and the network's connectivity.
+			neighbours. The second generation sought to model this with neurons which
+			produced a continuous (analogue) value which represented the firing rate
+			\cite{maass97}. Once again, the network's behaviour was defined by the
+			functions computed by each neuron and the network's connectivity.
 			
 			\begin{figure}
 				\center
@@ -66,35 +66,34 @@
 			arriving at a LIF neuron cause a temporary flow of current into or out of
 			the neuron, modelling the behaviour of synapses in biological neurons. The
 			LIF neuron integrates this current over time, accumulating charge which
-			gradually leaks away over time. If the charge in the neuron reaches a
-			certain threshold, it produces a spike and its charge is reset. This
+			gradually leaks away. If the charge in the neuron reaches a certain
+			threshold, the neuron produces a spike and its charge is reset. This
 			process is illustrated in figure \ref{fig:snn-example}.
 			
 			One of the key parameters of a neural network is the amount of influence
 			each incoming spike has on a neuron. Typically, this influence is modelled
-			by assigning a weight to each synapse which scales the impact of a spike
-			arriving via that synapse. As with the exact behaviour of the neurons
-			themselves, key modelling task is appropriately selecting these weights.
+			by assigning a `weight' to each synapse which scales the impact of a spike
+			arriving via that synapse.
 			
-			Models of many types of learning in the brain revolve around modelling the
-			self-adjustments of these weights by the brain. The exact rules by which
-			these weights are adjusted is the subject of much active research though
-			most promising approaches attempt to learn from the relative timing
-			\cite{pfister06} or rate \cite{bienenstock82} of spikes arriving at a
-			neuron. As well as adjusting weights, some learning rules can also form
-			entirely new connections between previously disconnected neurons
-			\cite{bamford10}.
+			Models of many types of learning revolve around modelling changes in
+			weights over long periods of time observed within the brain. The exact
+			rules by which these weights are adjusted is the subject of much active
+			research though most promising approaches attempt to learn from the
+			relative timing \cite{pfister06} or rate \cite{bienenstock82} of spikes
+			arriving at a neuron. As well as adjusting weights, some learning rules
+			can also form entirely new connections between previously unconnected
+			neurons \cite{bamford10}.
 		
 		\subsection{High-level modelling}
 			
 			The Neural Engineering Framework (NEF) \cite{eliasmith04} is a high level
 			framework for constructing large neural models which exhibit complex,
-			high-level behaviours. The NEF has been used to build large, complex
-			models including Spaun as described in \emph{`How to build a brain'},
-			(Eliasmith, 2013) \cite{eliasmith13}. The key to the NEF's ability to
-			model complex behaviours is its high-level approach to neural network
-			design. This high-level approach is based on three `principles' which are
-			enumerated below:
+			high-level behaviour. The NEF has been used to build large, complex models
+			including Spaun as described in \emph{`How to build a brain'}
+			\cite{eliasmith13}. The key to the NEF's ability to model complex
+			behaviour is its high-level approach to neural network design. This
+			high-level approach is based on three `principles' which are enumerated
+			below:
 			
 			\begin{description}
 				
@@ -116,18 +115,18 @@
 			By applying these principles, the NEF can be considered analogous to a
 			compiler for neural models. An implementation of the NEF for the Python
 			programming language called Nengo has been produced which enables users to
-			literally describe functions in standard Python code which are then
-			directly `compiled' into a neural model. Using this system, `Libraries' of
-			useful neural models and subcomponents have been built. A prominent
-			example is the Semantic Pointer Architecture (SPA) \cite{eliasmith13}
-			which provides additional higher level features including a symbolic
-			representation system.
+			describe functions in standard Python code which are then directly
+			`compiled' into a neural model. Using this system, `libraries' of useful
+			neural models and subcomponents have been built. A prominent example is
+			the Semantic Pointer Architecture (SPA) \cite{eliasmith13} which provides
+			additional higher level features including a symbolic representation
+			system.
 		
 	
 	\section{Simulating brains}
 		
 		The range of neural models described in the previous section all present a
-		significant computational challenge it simulate at scale. This section
+		significant computational challenge to simulate at scale. This section
 		briefly outlines the challenges faced when simulating large models.
 		
 		% TODO Introduce
@@ -140,13 +139,12 @@
 			0.1 to 1.0 ms. Additional calculations are also required to update the
 			neurons' states upon spike arrival. In the case of networks featuring
 			learning models, spike arrivals also typically entail further calculations
-			in order to update weights.
+			to update weights.
 			
 			Given that the human brain contains around 100 billion ($10^9$) neurons
 			each with around 10,000 synapses, this constitutes a non-trivial amount of
-			of computation. In order to maintain realtime performance, the simulation
-			of different neurons must be distributed across a large number of
-			processing cores.
+			computation. To maintain realtime performance, the simulation of different
+			neurons must be distributed across a large number of processing cores.
 		
 		\subsection{Communication}
 			
@@ -164,32 +162,31 @@
 			computer networks tend to be focused on supporting efficient one-to-one
 			(unicast) connectivity. In many cases meaning that each spike must be
 			repeatedly transmitted, once for each destination, which costs both large
-			amounts of network resource and consequently large amounts of power. To
-			achieve greater efficiency, multicast communications can be used where the
-			message is sent once and is delivered to multiple locations and only
+			amounts of network resource and consequently energy. To achieve greater
+			efficiency, `multicast' communications can be used where messages are sent
+			once and subsequently delivered to multiple locations, only being
 			duplicated within the network at the latest possible moment.
 			
 			An additional challenge for interconnection models is the amount of data
-			involved in individual communications within neural simulators. Spike
-			messages encode only a very limited amount of data: their source neuron
-			and the time they were produced. This means that individual messages sent
-			through the network tend to be very small even though the aggregate
-			network utilisation may be high. This pattern is directly opposed to many
-			conventional computational problems which instead tend to transmit large,
-			continuous blocks of data at more infrequent intervals. As a result,
-			conventional networks can impose large overheads when dealing with spikes
-			due to their small size. Some researchers have experimented with sending
-			many spikes at once in order to reduce the overhead involved however the
-			effectiveness of this technique can be limited in certain models
-			\cite{morrison05}.
+			involved in communications within neural simulators. Spike messages encode
+			only a very limited amount of data: their source neuron and the time they
+			were produced. This means that messages sent through the network tend to
+			be very small even though the aggregate network utilisation may be high.
+			This pattern is directly opposed to many conventional computational
+			problems which instead tend to transmit large, continuous blocks of data
+			at more infrequent intervals. As a result, conventional networks can
+			impose large overheads when dealing with spikes due to their small size.
+			Some researchers have experimented with sending many spikes at once to
+			reduce the overhead involved however the effectiveness of this technique
+			can be limited in certain models \cite{morrison05}.
 			
-			Luckily, much of the connectivity within the brain is highly local meaning
-			that neurons tend to mostly connect to physically nearby neurons. This
-			type of predominantly local communication is well supported by most
-			scalable computer networks such as those found in supercomputers. In order
-			to take advantage of this property, however, models must be carefully laid
-			out within a simulator's network. This problem known to be NP-complete
-			though effective heuristics solutions are known to exist \cite{haldar00}.
+			Luckily, much of the connectivity within the brain is highly local,
+			meaning that neurons tend to connect to nearby neurons. This type of
+			predominantly local communication is well supported by most scalable
+			computer networks such as those found in supercomputers. However, to take
+			advantage of this property models must be carefully laid out within a
+			simulator's network. This problem is known to be NP-complete though
+			effective heuristics solutions exist \cite{haldar00}.
 		
 		
 	
@@ -217,41 +214,46 @@
 		The Top500 list \cite{meuer14j} aims to enumerate, biannually, the 500
 		fastest supercomputers in the world ranked by their performance on the
 		LINPACK benchmark \cite{dongarraLINPAC}. The list offers an insight into the
-		current state-of-the-art for high-performance computing. Table
-		\ref{tab:top500} shows the top five machines in the Top500 list released in
-		June 2014 along with basic details of the type of interconnection involved.
-		In this section an overview is given of the architecture of these large
-		scale machines.
+		current state-of-the-art for high-performance computing. Many of the Top500
+		supercomputers are designed to cope with detailed physical simulations for
+		applications such as physics simulations, climate modelling, medical
+		treatment design and nuclear energy research
+		\cite{olcf12,nassif,dongarra13}.
+		
+		Table \ref{tab:top500} shows the top five machines in the Top500 list
+		released in June 2014 along with basic details of the type of
+		interconnection involved.  In this section an overview is given of the
+		architecture of these large scale machines.
 		
 		The LINPACK benchmark performs computations to ``analyze and solve linear
 		equations and linear least-squares problems'' to produce a computational
 		load representative of certain computational tasks common to scientific
 		computing \cite{dongarra84}. In particular it is a CPU-bound problem which
-		attempts to measure the peak CPU performance achievable\footnote{Where CPU
-		Performance is measured in Petaflops: how many quadrillion ($10^{15}$)
+		attempts to measure the peak CPU performance achievable\footnote{In LINPACK,
+		CPU Performance is measured in Petaflops: how many quadrillion ($10^{15}$)
 		floating point operations can be performed per second.} but without any
 		significant indication of the performance of the network which connects the
 		system together \cite{dongarra07}.
 		
-		Since simulation of spiking neural networks requires a large amount of
-		communication but relatively small amounts of computation, this benchmark is
-		clearly not representative of the workload of such a task.  In fact, many
-		modern supercomputer workloads also rely on network performance to a
-		greater degree than the LINPACK benchmarks and as a result a new ranking,
-		Graph500 \cite{murphy13n}, has appeared to address this shortcoming. This
+		Compared with LINPACK, simulation of spiking neural networks requires far
+		more communication resource but relatively small amounts of computation
+		making it a poor benchmark if results are taken at face-value. In fact, many
+		modern supercomputer workloads also rely on network performance to a greater
+		degree than the LINPACK benchmarks and as a result a new ranking, Graph500
+		\cite{murphy13n}, has appeared to address this shortcoming. This
 		complementary ranking instead uses benchmarks based on graph traversal
 		problems \cite{murphy10}. Such problems rely on having efficient
 		point-to-point communication between different parts of the system where
 		each section of the graph resides. Since there is a high degree of
-		correlation between the rankings of the two lists, we just consider the more
-		comprehensive Top500 list.
+		correlation between the rankings of the two lists, only the more
+		comprehensive Top500 list is considered here.
 		
 		
 		\subsection{Computation}
 			
 			Supercomputers are typically built by combining a large number of
-			`processing elements' in such a way that they are able to coherently
-			perform a single task. The processing elements used can come in many forms
+			`processing elements' in such a way that they are able to perform a single
+			task coherently. The processing elements used can come in many forms
 			though the three most prevalent are:
 			
 			\begin{description}
@@ -260,23 +262,22 @@
 				most common amongst the Top500.
 				
 				\item[Graphics Processing Unit (GPU)] A specialised vector processor
-				able to perform a single operation on many pieces of data
-				simultaneously. Growing in popularity in the Top500, used extensively in
-				Titan \cite{bland12}.
+				able to perform a single operation on many data simultaneously. GPUs are
+				growing in popularity in the Top500 and are used extensively in
+				high-ranking machines such as Titan \cite{bland12}.
 				
 				\item[Accelerators] Special purpose devices, sometimes application
 				specific. Examples include the Xeon Phi accelerator used in Tianhe-2
 				\cite{dongarra13} and Field Programmable Gate Arrays (FPGAs) which can
-				be programmed to efficiently implement specialised algorithms in
-				hardware.
+				be programmed to implement specialised algorithms in hardware.
 				
 			\end{description}
 			
-			A number of these individual processing elements are then combined
-			together to create a single `node' in the system. This may take the form
-			of an individual chip or a single circuit board. Typically the elements
-			within a node are able to communicate relatively cheaply while messages to
-			remote nodes must traverse a slower system-wide interconnection network.
+			A number of these processing elements are then combined to create a single
+			`node' in the system. This may take the form of a chip or a collection of
+			components sharing a circuit board. Typically the elements within a node
+			are able to communicate relatively cheaply while messages to remote nodes
+			must traverse a slower, system-wide interconnection network.
 		
 		\subsection{Interconnect}
 			
@@ -296,11 +297,11 @@
 				
 				The topology of a supercomputer's interconnection network dictates the
 				physical connections required to build it and constrains the patterns of
-				communication the system can efficiently support. Topologies are
-				typically designed such that communication between near-by nodes is
-				cheap and does not compete with distant nodes for communication
-				resources. The top five machines in the Top500 list achieve this using
-				the `fat tree' and `torus' topologies which are described below:
+				communication the system can support. Topologies are typically designed
+				such that communication between nearby nodes is cheap and does not
+				compete with distant nodes for communication resources. The top five
+				machines in the Top500 list achieve this using the `fat tree' and
+				`torus' topologies which are described below:
 				
 				\begin{figure}
 					\begin{subfigure}[t]{\textwidth}
@@ -314,9 +315,9 @@
 					
 					\begin{subfigure}[t]{\textwidth}
 						\center
-						\input{figures/fat-tree-closs}
+						\input{figures/fat-tree-clos}
 						\caption{Folded Clos network.}
-						\label{fig:fat-tree-closs}
+						\label{fig:fat-tree-clos}
 					\end{subfigure}
 					
 					\caption[Fat tree topologies.]{Fat tree topologies. Thicker lines
@@ -329,19 +330,20 @@
 				In a basic fat tree, nodes are connected as leaves in a tree structure
 				of multiple layers of switches (figure \ref{fig:fat-tree-concept}).
 				Connections higher in the hierarchy are connected via links of
-				increasing bandwidth to avoid bandwidth bottle-necks.  Nodes communicate
-				by sending messages up the tree until it reaches a node with its
-				destination as a child.
+				increasing bandwidth to avoid bottle-necks.  Nodes communicate by
+				sending messages up the tree until they reach a node of which the
+				destination as a child at which point the message is forwarded down the
+				tree towards its destination.
 				
-				In practice it is not possible to build switches with the required
-				bandwidth. In addition, the root switch is a potential single point of
-				failure for the whole system. As a result, folded Clos networks are
-				often used instead (figure \ref{fig:fat-tree-closs}), as in `Tianhe-2',
-				and have become synonymous with the fat tree topology. Here higher
-				levels of the hierarchy are duplicated introducing redundancy and
-				spreading the load.
+				In practice it is not possible to build switches with sufficient
+				bandwidth to act as a root node to most supercomputer networks. In
+				addition, the root switch is a potential single point of failure for the
+				whole system. As a result, folded Clos networks \cite{clos53} are often used instead
+				(figure \ref{fig:fat-tree-clos}), as in `Tianhe-2', and have become
+				synonymous with the fat tree topology. Here, higher levels of the
+				hierarchy are duplicated introducing redundancy and spreading the load.
 				
-				Fat trees support small maximum `hop' counts, that is the number of hops
+				Fat trees support small maximum `hop' counts; that is the number of hops
 				a message has to make between nodes in the network. Average hop counts
 				grow in fat trees by $O(\log{N})$ with respect to the number of nodes in
 				the system. Additionally, they support cheap local communication between
@@ -350,8 +352,8 @@
 				Unfortunately, tree-based networks depend on complex, high-radix
 				switches to connect many nodes simultaneously.  Tianhe-2, for example,
 				has thirteen 576-port switches based on a custom router chip. Such
-				architectures additionally often prove difficult to extend once
-				implemented \cite{dally04}.
+				architectures often prove difficult to extend once implemented
+				\cite{dally04}.
 				
 				\begin{figure}
 					\begin{subfigure}[t]{\textwidth}
@@ -389,8 +391,8 @@
 				Nodes at the extreme edges of the mesh are connected together to form a
 				torus. For the 2D case figure \ref{fig:forming-a-torus} shows how a
 				mesh, when rolled up (figure \ref{fig:torus-flat}) and bent into a
-				doughnut or torus shape (figure \ref{fig:torus-3D}), gives the torus
-				network its name.
+				doughnut or torus shape (figure \ref{fig:torus-3D}), giving network its
+				name.
 				
 				Each node is able to communicate directly with its immediate neighbours
 				in each dimension, that is above, below, left and right in the 2D case.
@@ -404,7 +406,7 @@
 				
 				Switches in torus networks can be simpler meaning that the worst case
 				performance of both types of network can be comparable (17 $\mu$s for a
-				broadcast in Tianhe-2 and 9 $\mu$s in a Blue Gene/Q such as Sequoia
+				broadcast in Tianhe-2 and 9 $\mu$s in Sequoia
 				\cite{dongarra13,morozov12}).
 				
 				The differences in performance between tori and trees depends strongly
@@ -415,47 +417,47 @@
 			\subsubsection{Link technology}
 				
 				Interconnect in modern supercomputers is made up almost exclusively of
-				High-Speed Serial (HSS) links (see \S\ref{sec:high-speed-serial}) running
-				over either electrical or optical connections. Electrical transmission
-				technologies are generally much cheaper than optical for short distances
-				and lower bandwidths. As a result connections between physically
-				neighbouring nodes are almost universally connected via such links.
-				Optical links, however, are favoured by supercomputer designs between
-				cabinets containing many individual nodes in systems such as Blue Gene/Q
-				and Tianhe-2 \cite{dongarra13,prickett10}.  These optical links are
-				typically used to carry the equivalent of many electrical signals and
-				side-step difficulties with driving long distance electrical
-				connections.
+				High-Speed Serial (HSS) links (see \S\ref{sec:high-speed-serial})
+				running over either electrical or optical connections. Electrical
+				transmission technologies are generally cost less money than optical
+				systems for short distances and lower bandwidths. As a result
+				connections between physically neighbouring nodes are almost universally
+				connected via such links.  Optical links, however, are favoured by
+				supercomputer designs between cabinets containing many individual nodes
+				in systems such as Blue Gene/Q and Tianhe-2
+				\cite{dongarra13,prickett10}.  These optical links are typically used to
+				carry the equivalent of many electrical signals and side-step
+				difficulties with driving long distance electrical connections.
 				
-				HSS links typically consume the same amount of power when idle as when
-				fully loaded.  Power-efficient use of the link therefore requires
-				implies that either the link is heavily loaded or that traffic in the
-				network tolerate long latencies of thousands of cycles during link
-				power-up \cite{soteriou03}.  For neural simulations, which are generally
-				latency sensitive and produce difficult to predict network traffic
-				depending both on the model's state and the model itself, this will
-				require careful tuning of link parameters to achieve power good
-				efficiency.
+				HSS links typically consume the same power when idle as when fully
+				loaded.  Power-efficient use of the link therefore requires implies that
+				either the link is heavily loaded or that traffic in the network
+				tolerate long latencies of thousands of cycles as links are powered-on
+				and off in response to load \cite{soteriou03}.  For neural simulations,
+				which are generally latency sensitive and produce difficult to predict
+				network traffic depending both on the model's state and the model
+				itself, this will require careful tuning of link parameters to achieve
+				power good efficiency.
 				
 				% TODO: Describe power control options for neural things
 			
 			\subsubsection{Packet formatting}
 				
 				Supercomputer networks are generally designed to handle the transfer of
-				large bursts of data on the order of several kilobytes in length making
-				use of technologies such as Message Passing Interface (MPI)
+				large bursts of data -- on the order of several kilobytes -- in length
+				making use of technologies such as Message Passing Interface (MPI)
 				\cite{mpiforum12}. Since every MPI message must contain a header
 				describing, for example, the message's origin and purpose, longer
 				messages keep the overall overhead introduced low.
 				
 				This pattern is also repeated in the low-level link protocols used by
-				supercomputers.  For example, in the widely used InfiniBand
-				high-speed serial interconnect technology, 120 bytes of metadata are
-				added to each packet \cite{infinibandta08}. This metadata allows the
-				system to perform important tasks such testing for, and retransmitting,
-				corrupt packets, route packets to their correct destination and apply
-				flow control. Each packet can contain up to 4,096 bytes of payload
-				meaning the overhead can be as low as 2.8\% protocol overhead.
+				supercomputers.  For example, in the widely used InfiniBand high-speed
+				serial interconnect technology, 120 bytes of metadata are added to each
+				packet \cite{infinibandta08}. This metadata allows the system to perform
+				important tasks such testing for, and retransmitting, corrupt packets,
+				routing packets to their correct destination and applying flow control.
+				Each packet can contain up to 4,096 bytes of payload meaning the
+				protocol overhead can be as low as 2.8\%.
 				
 				This pattern of communication matches many supercomputer applications
 				as is reflected by the prominence of array and matrix functions in
@@ -477,8 +479,8 @@
 		widely in their construction, scale, accuracy and flexibility this section
 		aims to briefly survey a representative selection of current approaches.
 		
-		This section divides its attention between neuromorphic systems which
-		unconventionally utilise analogue components to accelerate computation and
+		This section divides its attention between neuromorphic systems which,
+		unconventionally, use analogue components to accelerate computation and
 		those which take a purely digital approach. This section concludes with an
 		overview of the interconnection network of SpiNNaker, the machine which
 		forms the platform on which this work builds.
@@ -497,13 +499,13 @@
 			
 			A wide range of techniques for implementing neural models in analogue
 			circuitry has been proposed \cite{graf86,holler89,agranat90,azghadi13}.
-			Unfortunately though the lack of precision of analogue circuits is not a
+			Unfortunately although the lack of precision of analogue circuits is not a
 			problem for neural modelling, the lack of consistency is. The same
 			analogue circuit may have widely different characteristics in one part of
 			a chip compared to another due to variations in the silicon wafer. Such
 			circuits must be calibrated to allow meaningful simulations to take place.
 			In addition, analogue circuits must tolerate changes in temperature and
-			voltage without effecting the model's behaviour.
+			voltage without affecting the model's behaviour.
 			
 			So-called `mixed mode' systems have been designed such as BrainScaleS and
 			Neurogrid, described below, which combine analogue computational
@@ -512,7 +514,7 @@
 			interconnect circuitry across the chip while also simplifying routing of
 			spikes which can then share a limited number of wires using conventional
 			digital multiplexing methods, rather than one-wire-per-connection as in
-			Biology.
+			biology.
 			
 			\subsubsection{BrainScaleS}
 				
@@ -528,13 +530,13 @@
 				\end{figure}
 				
 				The BrainScaleS project makes use of wafer-scale integration where an
-				entire silicon wafer, usually used to manufacture tens or hundreds of
-				individual chips, is used as a single system. Instead of slicing the
-				wafer into individual reticles, space between the reticles is used to
-				build an interconnection network to yield a single large system. A
-				system built from a single wafer is able to simulate a network of around
-				200,000 neurons up to $10^5$ times faster than biological realtime
-				while using 6,000 times less power than a conventional supercomputer
+				entire silicon wafer, usually used to manufacture hundreds of individual
+				chips, is used as a single system. Instead of slicing the wafer into
+				individual dice, space between the reticles is used to build an
+				interconnection network to yield a single large system. A system built
+				from a single wafer is able to simulate a network of around 200,000
+				neurons up to $10^5$ times faster than biological realtime while using
+				6,000 times less power than a conventional supercomputer
 				\cite{schemmel08}.
 				
 				Each reticle in the wafer contains eight Analog Neural-Network Chips
@@ -544,11 +546,11 @@
 				below.
 			
 				The L1 network is a mesh network connecting all the ANCs on the same
-				wafer together \cite{fieres08}. The network is circuit-switched meaning
-				that connecting a set of points in the mesh `uses up' wires along that
-				path preventing others from using them. Circuit switched networks offer
-				low latency and low-power connections between ANCs compared with a
-				packet switched network (more commonly found in modern networks). This
+				wafer \cite{fieres08}. The network is circuit-switched, meaning that
+				connecting a set of points in the mesh `uses up' wires along that path
+				preventing others from using them. Circuit switched networks offer low
+				latency and low-power connections between ANCs compared with a packet
+				switched network (more commonly found in modern networks). This
 				performance comes at the expense of flexibility as lanes, once
 				allocated, cannot be used for any other purpose even when idle. This can
 				make changing the connectivity within the network at runtime difficult
@@ -595,7 +597,7 @@
 				million neurons using around three watts \cite{benjamin14}.
 				
 				When spikes are produced these are transmitted via a digital network to
-				all connected neurons\footnote{Neurogrid also features limited tunable
+				all connected neurons\footnote{Neurogrid also features limited, tunable
 				analogue connectivity for special, local connectivity cases which is not
 				discussed here.}. Spikes produced by or destined for a Neurocore are
 				streamed one by one to or from the board respectively
@@ -603,23 +605,22 @@
 				
 				Neurogrid's analogue neuron models do not account for weighted
 				connections so an FPGA is also attached to the network which can be
-				configured to probabilistically drop spikes sent via it to a given
-				neuron. By altering the probability of spike dropping variable
-				connection strengths can be approximated for networks where spike rates,
-				but not spike timing, are significant. The Neurogrid tree network also
-				includes a USB connection for loading neuron parameters and reading
-				results. 
+				configured to randomly drop spikes sent via it to a given neuron. By
+				altering the probability of spike dropping variable connection strengths
+				can be approximated for networks where spike rates, but not spike
+				timing, are significant. The Neurogrid tree network also includes a USB
+				connection for loading neuron parameters and reading results. 
 				
 				The Neurocore router and its interconnect, described in detail by
 				Merolla \emph{et. al.} \cite{merolla14}, is implemented entirely in
 				asynchronous logic. Routers communicate on- and off-chip via 1-of-4
 				non-return-to-zero links where two electrical transitions are
 				required to transmit and acknowledge pairs of two bits. This scheme
-				ensures that while idle the router consumes very little power and also
+				ensures that, while idle, the router consumes very little power and also
 				minimises unnecessary electromagnetic noise which may disrupt sensitive
 				analogue neuron circuitry on the chip.
 				
-				Neurogrid uses multicast wormhole routing allowing the network to easily
+				Neurogrid uses multicast wormhole routing allowing the network to
 				support both large packets during configuration and small packets for
 				spike transmission. Wormhole routing allows routers to begin forwarding
 				packets immediately rather than storing and then forwarding the whole
@@ -637,7 +638,7 @@
 				worst case where all $N$ neurons are connected to every other neuron,
 				the throughput requirements of the root node drop from $N^2$ using
 				unicast to $N$ for multicast. While this makes the system practical at a
-				size of up to 16 Neurocores, if the number of chips were increased, this
+				size of up to 16 Neurocores, if the number of chips was increased, this
 				bottleneck would force the use of either higher speed links throughout
 				or a change in topology.
 			
@@ -653,12 +654,12 @@
 			power efficient and faster than similar software models, these designs are
 			inherently tied to a single neural model.
 			
-			Thanks to the continued gains in power efficiency and speed made by more
-			general purpose digital platforms such as CPUs, GPUs and FPGAs, the
-			current generation of digital simulators is dominated by these more
-			flexible platforms. The mature FPGA-based Bluehive and CPU-based SpiNNaker
-			platforms are described below to give an overview of the state of current
-			digital simulator technology.
+			Continued gains have been made in power efficiency and speed made by
+			general purpose digital platforms such as CPUs, GPUs and FPGAs.
+			Consequently, the current generation of digital simulators is dominated by
+			these more flexible platforms. The mature FPGA-based Bluehive and
+			CPU-based SpiNNaker platforms are described below to give an overview of
+			the state of current digital simulator technology.
 			
 			\subsubsection{Bluehive}
 				
@@ -674,30 +675,30 @@
 				digital systems) which simulate all their neurons in parallel, Bluehive
 				multiplexes them four-at-a-time taking advantage of high speed FPGA
 				logic. Since duplicating a neuron model will quickly fill an FPGA, it is
-				advantageous to implement just a handful of neurons and simply rapidly
-				save and restore their state from a large memory bank. In this manner,
-				more attention can be spent on making the neuron model fast than making
-				it compact. In analogue models, this approach would be impractical
-				because analogue state is difficult to save and restore.
+				advantageous to split processing and storage, using the FPGA for
+				processing and off-the-shelf memories for storage. In this manner, more
+				attention can be spent on making the neuron model fast than making it
+				compact. In analogue models, this approach would be impractical because
+				analogue state is difficult to save and restore.
 				
 				The neuron models have been implemented both as custom, special purpose
-				hardware and also as conventional C code for a specialised vector
-				processor (BlueVec) implemented within the FPGA logic. For the same
-				neuron model, a C (software) implementation running on BlueVec required
-				an order of magnitude less code than the custom hardware implementation
-				yet only performed at half the speed.
+				hardware and as conventional C code for a specialised vector processor
+				(BlueVec) implemented within the FPGA logic. For the same neuron model,
+				a C (software) implementation running on BlueVec required an order of
+				magnitude less development effort than the custom hardware
+				implementation despite only a 50\% reduction in performance.
 				
 				The FPGAs are interconnected in a 3D torus ($k$-ary 3-cube) using
 				electrical high-speed serial links. A custom protocol is used which
-				allows spikes to be reliably transmitted to multiple FPGAs,
+				allows spikes to be transmitted reliably to multiple FPGAs,
 				automatically making use alternative connections if a cable is damaged
 				or unplugged. The protocol does not, however, include the ability to
-				multicast packets to multiple destinations. As a result, a specialised
+				transmit packets to several destinations. As a result, a specialised
 				`fan-out engine' is used which repeatedly transmits a spike once for
 				each destination.
 				
 				Each of the six bidirectional links are operated at 10 Gbit/s per
-				direction and remain powered on in order to ensure low latency
+				direction and remain powered on to ensure low latency
 				communication between FPGAs. In practice, each is only loaded on average
 				with about 250 MBit/s of traffic which helps reduce congestion in the
 				network and thus enable lower latencies.
@@ -757,12 +758,12 @@
 				expected operation it should be lightly loaded. Additionally, if a
 				deadlock occurs, it is broken using a simple packet dropping mechanism
 				when a packet has taken too long to progress. Though this means packet
-				delivery is not guaranteed, it assumed that likelihood of this occurring
-				is low and that neural networks are inherently tolerant to the rare loss
-				of spikes, as observed in biology. For networks where guaranteed
-				delivery is desired, dropped packets are not actually lost, instead
-				they're copied into a buffer where user software is able to reinject
-				them at an appropriate moment.
+				delivery is not guaranteed, it is assumed that likelihood of this
+				occurring is low and that neural networks are inherently tolerant to the
+				rare loss of spikes, as observed in biology. For networks where
+				guaranteed delivery is desired, dropped packets are not actually lost,
+				instead they're copied into a buffer where user software is able to
+				reinject them at an appropriate moment.
 	
 	\section{SpiNNaker network architecture}
 		\label{sec:spinnaker}
@@ -810,7 +811,7 @@
 			contains only two pieces of information: the identity of the neuron that
 			fired and the time that it occurred. Since SpiNNaker operates in realtime
 			and the network is designed to deliver packets within a single simulation
-			time-step, the time of the spike is implied by the time of the packets'
+			time-step, the time of the spike is implied by the time of the packet's
 			arrival. This simply leaves the neuron's identity which is also used as a
 			routing key \cite{davies12}.
 		
@@ -819,7 +820,7 @@
 			\label{sec:spinn-router}
 			
 			One of the key features of SpiNNaker's network is its support for
-			multicast routing of packets. Packets are forwarded around the network by
+			multicast routing of packets. Packets are forwarded through the network by
 			the router included in each eighteen core SpiNNaker chip. When a multicast
 			packet arrives at a router, it looks up the key in a routing table to
 			select a set of destinations for the packet. The router can forward
@@ -829,25 +830,26 @@
 			every core in which they're required.
 			
 			Since the system is designed to deal with up to a billion neurons, the
-			number of routing table entries required to explicitly route every spike
-			would be prohibitive. To reduce the number of routing entries required, a
-			number of simple compression techniques are required.
+			number of routing table entries required to route every key would be
+			prohibitive. To reduce the number of routing entries required, a number of
+			simple compression techniques are required.
 			
-			The first compression technique is that in most neural simulations, spikes
-			from every neuron in a particular population of neurons are typically
-			routed identically. To exploit this, routing keys may be split into two
-			parts: one which identifies the population from which a spike originates
-			and a another which identifies the exact neuron within that population.
-			By configuring the router to only compare the routing key against the part
-			which indicates the population, a single routing entry can be used for an
-			entire population. Since populations may contain thousands of neurons,
-			this technique substantially reduces the number of entries required.
+			The first compression technique exploits the fact that in most neural
+			simulations neurons are grouped into populations. Spikes from neurons in a
+			particular population can typically all routed in the same way. To exploit
+			this, routing keys may be split into two parts: one of which identifies
+			the population from which a spike originates and another which identifies
+			the neuron within that population.  By configuring the router to lookup
+			the key using only the part which indicates the population, a single
+			routing entry can be used for an entire population. Since populations may
+			contain thousands of neurons, this technique substantially reduces the
+			number of entries required.
 			
 			To implement this first compression technique, each entry in the routing
 			table contains a key, mask and destination field. The mask field can be
-			used to ignore the bits in a packet's key, for example those which
-			correspond to specific neurons within a population. If the packet's masked
-			key matches the key in the table entry, it is routed according to the
+			used to elide bits in a packet's key, for example those which correspond
+			to specific neurons within a population. If the packet's masked key
+			matches the key in the table entry, it is routed according to the
 			destination field. Using a hardware device called a ternary Content
 			Addressable Memory (CAM), this masking and comparison operation can be
 			performed for every entry in a routing table in a single clock cycle.
@@ -908,26 +910,25 @@
 			three boards shown can be further connected to form a torus, a process
 			which is more clearly visualised in figure \ref{fig:threeboard-sliced}. By
 			repeating this pattern, arbitrarily large torus networks can be
-			constructed using 48 chip boards.
+			constructed using triads of 48 chip boards.
 			
 			Between individual SpiNNaker chips, an asynchronous `2-of-7' protocol is
 			used to communicate packets. This system enables low-power communication
-			between chips which only uses power during data transmission.
+			between chips which only uses energy during data transmission.
 			Unfortunately, 2-of-7 codes use sixteen electrical signals (eight per
 			direction) for each chip-to-chip link. Though this is acceptable for chips
 			sharing a circuit board where wires are relatively cheap, connecting the
 			768 wires to other boards is not practical. As a result, six bundles of
-			eight chip-to-chip links each are transparently multiplexed/demultiplexed
-			onto six high-speed serial (HSS) links, one for each bundle. These links
-			(described in greater detail in the next section) require only two signals
-			but operate more than eight times faster than the 2-of-7 links and so no
+			eight chip-to-chip links each are multiplexed/demultiplexed onto six
+			high-speed serial (HSS) links, one for each bundle. These links (described
+			in greater detail in the next section) require only two signals but
+			operate more than eight times faster than the 2-of-7 links and so no
 			throughput penalty is incurred.
 			
-			The HSS links are implemented within the three FPGAs present in each 48
+			The HSS links are implemented within the three FPGAs present on each 48
 			chip SpiNNaker board. Each FPGA independently handles two of the HSS
 			board-to-board links. These FPGAs also feature additional connectivity
-			which are aimed to be exploited as part of the work proposed in this
-			report.
+			which may be exploited as part of the work proposed in this report.
 	
 	\section{High-Speed Serial (HSS)}
 		\label{sec:high-speed-serial}
@@ -952,7 +953,6 @@
 				\begin{tikzpicture}[thick, node distance=0.2cm, xscale=0.40]
 					\input{figures/parallel-example}
 					\input{|"python figures/parallel_example.py 'Hello, World!' 0.7"}
-					
 				\end{tikzpicture}
 				
 				\caption{With skew.}
@@ -968,27 +968,37 @@
 		Traditionally, digital links within computers have relied on parallel
 		signalling where a `word' consisting of multiple bits is transmitted
 		simultaneously each clock tick (figure \ref{fig:parcons-no-skew}). This
-		mechanism is popular because it is simple and allows easy scaling by simply
+		mechanism is popular because it is simple and allows easy scaling by
 		increasing the number of bits within in a word. Unfortunately, as the speed
 		at which devices run increases, the assumption that the times taken by
-		signals to propagate down different wires is the same has fallen apart. This
+		signals to propagate down different wires is the same has broken down. This
 		`skew' between signals means that a receiver may erroneously receive bits
 		from different words at the same time on different wires resulting in an
 		error (figure \ref{fig:parcons-with-skew}). Though skew can be minimised by
 		matching the quality and lengths of the wires used, this is expensive and
 		does not scale well.
 		
+		An alternative parallel approach is delay-insensitive $M$-of-$N$ codes where
+		a change in exactly $M$ out of a set of $N$ signals indicates a specific
+		value \cite{bainbridge03}. For example, in SpiNNaker, the 2-of-7
+		chip-to-chip links transmit four bits every time exactly two of the seven
+		signals toggles.  Unfortunately, this approach requires that every value be
+		acknowledged meaning a round-trip delay is incurred for every signal,
+		severely limiting bandwidth.
+		
 		Serial signalling, by contrast, only transmits one bit at a time thus
 		avoiding skew related issues. In addition, serial signalling reduces the
-		number of physical wires required to transmit data. Since the number of
+		number of wires required to transmit data. Since the number of
 		connections required by a chip or circuit board can have a large influence
 		on cost, this factor alone may make serial a necessary choice.
 		
 		While low-speed serial signalling techniques such as RS232 can be extremely
-		simple, at higher speeds matters become more complex. This section describes
-		a number of the techniques employed by high-speed serial links and their
-		implications for interconnection networks. A more in-depth treatment of HSS
-		technology can be found by Athavale \emph{et. al.} \cite{athavale05}.
+		simple, at higher speeds matters become more complex. This additional
+		complexity has ramifications for applications of HSS and influence the work
+		proposed later in this report. This section examines a number of the
+		techniques employed by high-speed serial links and their implications for
+		interconnection networks. A more in-depth treatment of HSS technology can be
+		found by Athavale \emph{et. al.} \cite{athavale05}.
 		
 		\subsection{Clock recovery}
 			
@@ -997,9 +1007,14 @@
 			
 			Since serial signals can only transmit a single bit per clock cycle, to
 			achieve high bandwidths HSS links typically operate at multiple gigahertz.
-			Transmitting this clock signal alongside the data would require a large
-			amount of power and be electrically challenging to connect due to the need
-			to minimise skew between the data and clock signals.
+			Transmitting this clock signal alongside the data would be challenging to
+			implement due to the need to minimise skew between the data and clock
+			signals. Further, transmitting the clock would double energy required to
+			drive the link. This is because energy is consumed when the signal along a
+			wire is changed and, the longer the wire, the larger the amount of energy
+			per transition. Since HSS links typically connect devices long distances
+			apart, the energy requirements of just driving the signals can outweigh
+			the consumption of supporting logic.
 			
 			An alternative to transmitting the clock signal is to extract the clock
 			from the data stream itself. This is typically done using a Clock Recovery
@@ -1011,11 +1026,19 @@
 			frequent transitions.
 			
 			The need for frequent transitions also implies that the link must
-			constantly transmit values in order for the clock to be reconstructed by
-			the receiver. Further, it takes some time for a CRC to lock onto the clock
-			used by an incoming stream of data. These properties can have a
-			significant impact on the power consumption of serial links over which low
-			latency communication is required.
+			constantly transmit values for the clock to be reconstructed by the
+			receiver. This means that a lightly-loaded link consumes as much energy as
+			a fully-loaded link. This is in sharp contrast with links using
+			asynchronous $M$-of-$N$ codes which only draw power when data is
+			transmitted.
+			
+			To reduce power consumption, HSS links typically have the ability to vary
+			the link speed in response to load.  This requires the CRC to re-lock onto
+			the clock used every time the link speed is changed. The time taken for
+			the CRC to re-lock can cause serious problems for applications requiring
+			low latencies since data cannot be transmitted during CRC re-lock. For
+			realtime simulations of spiking neural networks delays can violate
+			deadlines for message transmission.
 		
 		\subsection{Clock correction}
 			
@@ -1043,9 +1066,14 @@
 			allowing it to catch up and the buffer to empty. Conversely, if the
 			receiver is faster than the sender, its buffer will gradually empty.  If a
 			low-water mark is passed, the receiver may duplicate any skip sequences in
-			its buffer. As a side-effect of this behaviour, a certain amount of
-			buffering is required by HSS systems which contributes both to chip area
-			requirements and latency involved in traversing a link.
+			its buffer.
+			
+			Clock correction hardware therefore adds a certain amount of buffering
+			which contributes both to chip area requirements and more importantly
+			increases the latency suffered when traversing a HSS link. This latency
+			cost can be an important factor for realtime neural simulators such as
+			SpiNNaker where data must arrive at its destination in the network within
+			a short time window.
 		
 		\subsection{Error recovery}
 			
@@ -1054,33 +1082,36 @@
 			detection and recovery mechanism must be used to ensure reliable delivery
 			of data.
 			
-			In noisy communication systems such as wireless networks where bit errors
-			are frequent forward error correction (FEC) is used which redundantly
+			In noisy communication systems such as wireless networks, where bit errors
+			are frequent, Forward Error Correction (FEC) is used which redundantly
 			encodes data such that it is still recoverable in the presence of certain
-			errors.  HSS links are typically far less noisy and thus errors are
-			comparatively rare.  In order to avoid the significant communication and
+			errors \cite{hamming50}. HSS links are typically far less noisy and thus
+			errors are comparatively rare.  To avoid the significant communication and
 			computation overhead involved in FEC, HSS links typically use checksums to
 			detect the validity of arriving data and a resend mechanism to request
 			retransmission when corrupted data arrives.
 			
 			Resend mechanisms require that senders retain copies of data due to be
-			sent over a link until it is acknowledged as successfully received by the
-			receiver. The number of packets which must be retained is determined by
-			the frequency with which acknowledgements are sent for correctly arriving
-			data. The overheads introduced by transmitting acknowledgements along with
-			the buffering used are parameters that must be tuned to for a given
+			sent over a link until it is acknowledged as successfully received. The
+			number of packets which must be retained is determined by the frequency
+			with which acknowledgements are sent for correctly arriving data. The
+			overheads introduced by transmitting acknowledgements along with the
+			buffering used are parameters that must be tuned to for a given
 			application. These overheads typically are far less significant than those
-			added by FEC when the number of errors is low. Retransmission does,
-			however, add significantly to the latency cost of errors since a
-			round-trip delay is incurred in the sending of a negative acknowledgement
-			and awaiting retransmission.
+			added by FEC when the number of errors is low.
+			
+			Retransmission does, however, add significantly to the latency cost of
+			errors since a round-trip delay is incurred in the sending of a negative
+			acknowledgement and awaiting retransmission. Once again, this latency can
+			be significant for realtime systems.
 		
 		\subsection{Flow control}
 			
-			Finally, due to the amount of buffering required for a HSS link, flow
-			control cannot be as simple as a handshaking mechanism where blocks of
-			data are individually acknowledged or blocked since waiting for these
-			signals would introduce a large overhead. As a result, more sophisticated
-			schemes such as credit based flow control \cite{dally04} may be used.
-			These mechanisms introduce additional complexity and buffering by
-			typically only a minimal latency penalty.
+			HSS links exhibit relatively high latencies due to the buffering required
+			by clock correction and 8b/10b coding. As a result of this, flow control
+			cannot be a simple handshaking mechanism where blocks of data are
+			individually acknowledged since waiting for these signals would introduce
+			a large overheads. Instead, more sophisticated schemes such as credit
+			based flow control \cite{dally04} are be used.  These mechanisms introduce
+			further complexity and buffering but typically only a minimal latency
+			penalty.
