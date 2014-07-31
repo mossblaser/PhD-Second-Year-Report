@@ -12,88 +12,200 @@
 	\end{figure}
 	
 	The preliminary work so-far has focused on the analysis and exploration of
-	extensions to SpiNNaker's interconnection network. In particular, it focuses
-	on the high-speed serial links which connect chips on different boards within
-	the system. The proposed research plan is summarised in figure
-	\ref{fig:plan-gantt} and aims to continues this work.
+	extensions to SpiNNaker's interconnection network, in particular on the
+	high-speed serial links which connect chips on different boards within the
+	system. Based on the wire-length limitations imposed by HSS technology, a new
+	wiring scheme was developed which achieves both the desired network topology
+	while also ensuring wires remained short. Following this development, this
+	scheme was extended to support small-world connectivity between boards,
+	potentially enabling reduced latencies within the existing SpiNNaker network.
+	In preparation for implementation within SpiNNaker's hardware, a simulator has
+	been developed to model the potential benefits and guide the design. Finally,
+	the foundations of hardware extensions to SpiNNaker's board-to-board
+	interconnect have been laid. The proof-of-concept system built on these
+	foundations has already produced measurable improvements to certain SpiNNaker
+	applications.
 	
-	The proposed work can be divided into two distinct parts. The first
-	investigates the use of small-world, or small-world-like networks within
-	actual SpiNNaker systems. The second extends this to attempt to improve power
-	efficiency within SpiNNaker by powering-off or slowing down links where
-	lightly-loaded alternatives exist.
+	The proposed research plan is summarised in figure \ref{fig:plan-gantt}. The
+	work can be divided into two distinct parts. The first investigates the use of
+	small-world, or small-world-like networks within actual SpiNNaker systems. The
+	second extends this to attempt to improve power efficiency within SpiNNaker by
+	powering-off or slowing down links where lightly-loaded alternatives exist.
 	
-	To measure success, realistic network traffic from neural simulations, along
-	with the collection of suitable metrics will be required. Building a
-	representative selection of benchmark networks, along with the infrastructure
-	for assessing their impact on SpiNNaker's interconnect will be a key part of
-	the work undertaken.
+	This work will form the basis of a new generation of HSS-based interconnect
+	with applications both for existing systems such as SpiNNaker and the next
+	generation of neural simulators. In particular, this work hopes to produce
+	novel HSS power-management techniques suited to realtime applications and
+	which take advantage of the topologies allowed by HSS networks.
+	
+	To measure success, performance will be benchmarked using realistic network
+	traffic from both neural simulations taken from the field and synthetic loads.
+	Since directly instrumenting many neural models can introduce unacceptable
+	overheads, this task will exploit the properties of the high-level NEF neural
+	modelling framework to inexpensively produce artificial network traffic which
+	is identical to neural simulations. With the processing and storage resources
+	this frees up a collection of suitable metrics can be gathered directly.
 	
 	This chapter will outline each of the key research aims and the work proposed
 	in approximately chronological order.
 	
-	\section{Nengo network experiments}
+	\section{NEF network experiments}
 		
 		As described earlier, the NEF provide an actively used neural modelling
 		architecture capable of generating large scale neural models. Unlike many
-		other frameworks the NEF is already being used to construct large, models
+		other frameworks the NEF is already being used to construct large models
 		from simple neurons, the design target of SpiNNaker. The SPAUN model, for
-		example, contains 2.5 million simple neurons \cite{eliasmith12}, while
-		models produced by students at the two-week Nengo 2014 Summer School
-		constructed networks containing almost half a million neurons, even within
-		this short timespan. As well as being large, Nengo models generally feature
-		easily verified high level-behaviour. This feature enables easier
-		identification of system failures and can help guide efforts to debug
-		issues.
+		example, contains 2.5 million simple neurons \cite{eliasmith12}. As well as
+		being large, NEF models generally feature easily verified high-level
+		behaviour making it easy to identify faults. Another distinctive feature of
+		the NEF is that, while biologically plausible, the pattern of communication
+		between populations of neurons (in terms of the rate and pattern of spikes)
+		can be reproduced inexpensively. It is this property which makes the NEF
+		especially attractive for network benchmarking since it frees up processing
+		and storage resources for the direct collection of statistics relating to
+		network behaviour.
 		
-		In addition to the above, Nengo's SpiNNaker implementation lends itself to
-		convenient analysis due to its unconventional implementation. Though still
-		simulating spiking neurons, the spikes themselves are not transmitted over
-		SpiNNaker's network, instead, the value represented by the spikes is
-		transmitted. This approach exploits the observation that a population with
-		hundreds of neurons will typically represent a vector of at most low tens of
-		values. Though the value must be transmitted every time step (typically 1ms)
-		and requires a `long' 72-bit SpiNNaker packet for each element, a large
-		population of neurons in Nengo typically produces a large number of spikes
-		each time step, each requiring a `short' 40 bit packet. For example, for a
-		population of 1,000 neurons representing a two-valued vector and firing at
-		an average rate of 10 Hz would produce around ten 40-bit packets (400 bits)
-		to be transmitted each millisecond.  Alternatively, if the represented value
-		was transmitted, only two 72-bit packets would be required (144 bits). In
-		reality, many Nengo models feature firing rates far higher than the 10 Hz
-		average found in the brain and as a result, this mechanism can result in
-		significant savings in network resources.
+		The above factors all support the NEF as a strong choice for benchmarking
+		the interconnection networks of neural modelling systems. In this section,
+		the methods by which network communication patterns can be recreated are
+		outlined. This is followed by a discussion of the measures and networks
+		which will be used.
 		
-		Transmission of represented value has the side-effect of making the overall
-		rate of packet transmission deterministic: the same number of values must be
-		transmitted every millisecond, regardless of the simulated network's state.
-		This means that artificially reproducing the traffic patterns and modelling
-		them analytically can be greatly simplified.
+		\subsection{Recreating NEF spike traffic}
+			
+			In the NEF, populations of neurons represent continuous (analogue) vector
+			values encoded by a linear combination of the neurons' firing rates. When
+			neural populations are generated uniformly -- the case for most existing
+			models -- the average rate of firing within a population remains
+			approximately constant, regardless of the value encoded. Further, since
+			simple LIF neurons are frequently used, the firing patterns exhibited are
+			very regular. The exception to this rule is when an `inhibitory' signal is
+			applied to a population which causes the neurons to cease firing.
+			
+			As described in \S\ref{sec:spinn-router}, spikes within a neural simulator
+			are routed at the granularity of whole populations. This means that
+			traffic in the network is proportional to the aggregate behaviour of
+			populations of neurons since every neuron impacts the network in the same
+			manner. As a result, the network traffic due to a population of neurons in
+			an NEF network can be accurately approximated by a bank of Poisson sources
+			whose average firing rate matches that of the population. To model
+			inhibitory connections, recorded traces of the inhibitory signals from
+			simulations may be used to control the generation of random packets.
 		
-		Initially, work will be carried out to analyse the effects of traffic
-		patterns produced by large networks in SpiNNaker. Nengo allows users to
-		change the underlying neuron model. This mechanism will be used to define a
-		new `neuron type' which instead of actually modelling a neuron simply
-		generates an equivalent traffic pattern and use spare resources to records
-		network behaviour. Since most Nengo networks use a single neuron type, this
-		means only a single parameter change is required to analyse a given network.
-		Additionally, this approach allows great flexibility in the metrics recorded
-		since cores will be largely idle.
+		\subsection{Recreating NEF vector traffic}
+			
+			In practice, many simulators implemented for the NEF don't transmit spikes
+			through their networks. Instead, the vector which the spikes encode is
+			transmitted. For NEF models this approach is provably equivalent to
+			transmitting spikes but can save both network, memory and processing
+			resources. Though the memory and processing savings are beyond the scope
+			of this report, the network saving is described below in the case of the
+			SpiNNaker implementation of the NEF.
+			
+			Network savings occur since a population with many hundreds of neurons
+			will typically represent a vector fewer than ten values. As an example,
+			consider a population of 1,000 neurons used to represent a two-valued
+			vector. If each neuron fires at a biologically representative rate of 10
+			Hz, the population will produce around ten spikes each millisecond time
+			step resulting in the transmission of a total of ten 40-bit SpiNNaker
+			packets (400 bits). If the vector is transmitted instead, it must be
+			transmitted every time step and requires one 72 bit SpiNNaker packet for
+			each vector element (since a single element will fit in the payload of a
+			SpiNNaker packet). This results in a total of 144 bits being transmitted
+			per time step.
+			
+			Clearly, this mode of operation results in trivial to reproduce network
+			usage since the number of transmissions per time step is exactly uniform
+			and constant, irrespective of the values represented or inhibitory
+			signals. The timing of transmissions within a time step is determined by
+			the simulator used.
+			
+			This mode of operation doesn't match the resources available in hardware
+			simulation platforms such as SpiNNaker since the transmission of of
+			continuous bursts of data (i.e. vectors) is not supported. Though it is
+			possible to work around this limitation as described above, it is clear
+			that the omission of such burst transmission modes is a shortcoming of
+			such architectures which will be considered in the work described in this
+			section.
 		
-		As well as `real' Nengo models, a number of synthetic models designed to
-		stress network resources will also be created. These will be useful for
-		directly determining classes of challenging traffic patterns.
+		\subsection{Benchmark networks and metrics}
+			
+			A number of benchmark networks utilising the NEF will be collected from
+			the literature. Though a specific set of networks remains to be assembled,
+			candidates include SPAUN \cite{eliasmith12}, the Basal Ganglia
+			\cite{stewart12} and models produced during the 2014 Nengo Summer School.
+			
+			Additionally, various synthetic benchmark networks will be produced aimed
+			to stress certain special-cases of network connectivity. Candidates
+			include all-to-all connected networks, networks with highly regular
+			structure (e.g. trees, meshes) and random connectivity. These synthetic
+			networks may be scaled to arbitrarily large systems to evaluate networks
+			larger than currently studied in the literature but which may be handled
+			by existing hardware.
+			
+			Though other metrics may developed as necessary, the following
+			will be recorded during benchmark runs.
+			
+			\begin{description}
+				
+				\item[Packet injection rate] gives a basic indicator of the loading of
+				the network. Recordings will attempt to measure a histogram of injection
+				rates over the course of a simulation time step to determine how evenly
+				load is injected into the network.
+				
+				\item[Packet dropping rate] indicates instances of congestion and
+				deadlock within the network. By recording the location of dropped
+				packets and their intended route, hot-spots in the network can be
+				detected.
+				
+				\item[Packet routing rate] indicates the amount of traffic passing
+				through a given chip. This in turn gives an indication of load in each
+				part of the network.
+				
+				\item[Packet latency] is a critical measure for realtime neural
+				simulations. If latency grows sufficiently large, models will behave
+				incorrectly.
+				
+				\item[Packet arrival jitter] (variation in latency) can help inform the
+				safety margins required when transmitting a packet to meet a realtime
+				deadline.
+				
+			\end{description}
+			
+			To ease the conversion of existing neural models into network traffic
+			experiments, the ability to globally change the underlying neuron model
+			used by a network within NEF networks on SpiNNaker will be used. A new
+			`neuron' model will be developed which implements the traffic generation
+			schemes proposed in this section along with the reporting of the above
+			metrics. This technique will mean that models can be used in network
+			experiments with a single changed line of code.
 		
-		This work is expected to produce two major outcomes: an improvement in
-		Nengo's performance on SpiNNaker and also the creation of a suite of
-		benchmarks based on real Nengo networks. The former improvement is expected
-		to result primarily from a better understanding of the effects that
-		different patterns of packet transmission have on network performance. Some
-		improvement is also anticipated through changes to the placement and routing
-		algorithms used for allocating groups of neurons to cores in the system.
-		This work is planned for journal publication by the end of the acedemic year
-		though a specific journal has not yet been selected.
-		
+		\subsection{SpiNNaker NEF improvements}
+			
+			In addition to providing a suite of benchmarks to validate later work,
+			this suite of benchmarks will initially be used to contribute to the
+			implementation of the NEF on SpiNNaker. This work will be carried out in
+			collaboration with the researchers responsible for maintaining the
+			SpiNNaker NEF implementation.
+			
+			This work will make two key contributions. The first will be to explicitly
+			define what classes of network can be successfully mapped into SpiNNaker.
+			This would be the first such work to explore this problem and it is could
+			inform the design of future neural simulations systems.
+			
+			The second contribution will be to determine the impact that the timing of
+			traffic injection into SpiNNaker's network on network performance. Within
+			each simulation time step, packets must be inserted into the network with
+			enough time to allow them to arrive at their destination. At present,
+			packets are transmitted immediately, as soon as computation has completed
+			potentially resulting in bursts of network activity increasing the chances
+			of deadlock in SpiNNaker-like networks \cite{dally04}. This work will
+			attempt to determine the effects of distributing packet transmissions in
+			an alternative manner, for example distributing uniformly or randomly
+			during a simulation time step.
+			
+			These contributions are planned for Journal publication around the end of
+			the academic year.
 	
 	\section{Small-world networks for SpiNNaker}
 		
@@ -101,19 +213,19 @@
 		% and preliminary small-world communications via the SpiNNaker links. This
 		% scheme will continue to make use of the current HSS protocol blocks.
 		
-		To exploit the benefits of small-world network topologies, work will be
-		carried out to attempt to implement them within SpiNNaker's board-to-board
-		interconnection network. Work will begin by extending the Tickysim network
-		simulator with small-world connectivity and a model of SpiNNaker's
-		board-to-board links. Guided by these simulation results, this will be
-		followed by an implementation in SpiNNaker.  This implementation will then
-		be evaluated using the Nengo benchmarks described previously.
+		To exploit the benefits of small-world network topologies, these will be
+		implemented within SpiNNaker's board-to-board interconnection network. Work
+		will begin by extending the Tickysim network simulator with small-world
+		connectivity and a model of SpiNNaker's board-to-board links. Guided by
+		these simulation results, this will be followed by an implementation in
+		SpiNNaker.  This implementation will then be evaluated using the NEF
+		benchmarks described previously.
 		
 		There are three main challenges associated with an implementation of
 		small-world networks in SpiNNaker which are outlined in this section. The
-		first is the construction of a routing scheme which can be practically
-		implemented within the available FPGA logic. The second is deciding the
-		method by which random links are added and which effect this has on physical
+		first is the construction of a routing scheme which can be implemented
+		practically within the available FPGA logic. The second is deciding the
+		method by which random links are added and what effect this has on physical
 		assembly difficulties and performance. The final challenge, which will be
 		undertaken only if time allows, is the possibility of routing packets
 		between FPGAs on the same board. This would allow, for example, packets to
@@ -122,35 +234,34 @@
 		
 		\subsection{Routing}
 			
-			One of the principle challenges of implementing new network topologies
+			One of the principal challenges of implementing new network topologies
 			within the FPGAs on a SpiNNaker board is that all routing must take place
 			within the FPGA itself. Within a SpiNNaker chip, routing is handled by
 			dedicated routing hardware featuring a generous ternary CAM which may
-			prove expensive within FPGA logic \cite{locke11}. Additionally, each FPGA is
-			responsible for sixteen individual streams of traffic, all of which must
-			be routed without a reduction in throughput.
+			prove expensive within FPGA logic \cite{locke11}. Additionally, each FPGA
+			is responsible for sixteen individual streams of traffic, all of which
+			must be routed without a reduction in throughput.
 			
-			In preliminary work, a very simple single-entry key and mask routing
+			In preliminary work, a very simple, single-entry key and mask routing
 			scheme proved adequate for simple host connectivity.  This scheme consists
 			of a mask and comparison performed on each packet to determine its route
 			which can be implemented very cheaply within the FPGA logic.  This
-			approach is adequate here because generally there will be only a few I/O
+			approach is adequate here because, generally, there will be only a few I/O
 			devices in a system compared with the number of neurons and so it is
-			feasible to allocate a bit out of all routing keys to indicate such
-			packets.  For small-world networks, however, allocating a bit in the key
-			space to indicate when each small-world link should be used would require
-			more bits than available in routing keys due to the greater number of
+			feasible to allocate a bit in routing keys to indicate I/O packets.  For
+			small-world networks, however, allocating a bit in the key space to
+			indicate when each small-world link should be used would require more bits
+			than are available in routing keys due to the greater number of
 			small-world links.
 			
 			One possible solution to this problem is to exploit the relative speed
 			differences between the FPGA logic and the links to SpiNNaker chips. A
 			SpiNNaker chip link can nominally transmit a (short) packet in around 167
 			$\mu$s while FPGA logic clocked at 75 MHz cycles in around 13 ns. This
-			means that if a router with a throughput of one packet per cycle was
-			implemented, up to twelve links could be handled by a single router
-			without impacting on throughput. This means a that only two such routers
-			would be required to handle all sixteen of each FPGA's links. A
-			feasibility study will be required to establish the potential capability
+			means that a router with a throughput of one packet per cycle could handle
+			up to twelve links without becoming a bottleneck. This means a that only
+			two routers would be required to handle all sixteen of each FPGA's links.
+			A feasibility study will be required to establish the potential capability
 			of such routers given the resources available on the FPGAs on each board.
 			
 			An alternative approach is to allow the FPGAs to modify the routing keys
@@ -172,17 +283,17 @@
 			
 			The method by which random connectivity is introduced into small-world
 			networks can have a significant impact on both the amount of manual labour
-			required to install it and also the actual performance gains achieved. One
-			approach is to generate random connections and produce a list of wiring
-			instructions for a technician to assemble. An alternative is to allow the
-			technician to add the connections randomly at their own discretion.
+			required to install it and the performance gains achieved. One approach is
+			to generate random connections and produce a list of wiring instructions
+			for a technician to assemble. An alternative is to allow the technician to
+			add the connections randomly at his or her own discretion.
 			
 			Computer generated random connections have the advantage that they can be
-			both unbiased and also may be post processed to prune non-beneficial links
+			both unbiased and may be post processed to prune non-beneficial links
 			which, for example, happen to connect two already neighbouring or
 			nearly-neighbouring boards. The main downside of this approach is that the
-			effort required to manually assemble a long list of connections may be
-			great, especially for large machines where there may be as many as 3,600
+			effort required to assemble a large number of connections may be great,
+			especially for large machines where there may be as many as 3,600
 			potential connection points.
 			
 			The alternative approach, while straightforward for a technician's wiring
@@ -202,26 +313,32 @@
 			
 			The FPGAs on SpiNNaker boards are interconnected allowing them to
 			communicate locally via a HSS ring network. If time allows, this could be
-			used to directly forward packets which would otherwise simply pass
-			directly through all the chips the board before emerging on the other
-			side. This mechanism will reduce contention for link resources on
-			intervening chips while potentially reducing the latency for the packet
-			forwarded. This mechanism is a variant of an express cube \cite{dally91}
-			which exploits existing unused hierarchy in the network.
+			used to forward packets directly which would otherwise pass through many
+			chips the board before emerging on the other side. This mechanism will
+			reduce contention for link resources on intervening chips while
+			potentially reducing the latency for the packet forwarded. This mechanism
+			is a variant of an express cube \cite{dally91} which exploits existing
+			unused hierarchy in the network.
 		
 		\subsection{Evaluation}
 			
-			The suite of Nengo benchmark networks described in the previous section
-			will be used to evaluate the performance of the system. It is hypothesised
-			that large, heavily connected networks will benefit from the additional
-			small-world connectivity since these are where longer connections are
-			likely to exist as well as greater contention for link resources.
+			The suite of NEF benchmark networks described in the previous section will
+			be used to evaluate the performance of the system. In particular, it is
+			expected that the load throughout the network, measured in terms of the
+			rate at which packets pass through every node will be reduced in the
+			presence of small-world links. Additionally, latency is expected to be
+			reduced for long connections within the network.
+			
+			It is consequently hypothesised that larger and more heavily connected
+			networks will therefore be supported. This hypothesis will be tested by
+			varying the size of synthetic networks to determine if larger networks are
+			enabled by small-world connectivity.
 	
 	
 	\section{USB 3.0 interface}
 		
 		As part of the collaboration started at the Capo Caccia workshop to develop
-		a high speed interface for communications with SpiNNaker a USB 3.0 system
+		a high speed interface for communications with SpiNNaker, a USB 3.0 system
 		will be produced. This work is awaiting the completion of a circuit board
 		design on which the interface will be implemented. No firm date has been
 		given for arrival of a prototype board and so the dates indicated in figure
@@ -233,7 +350,7 @@
 		Given the timely availability of this device, it will allow superior
 		monitoring of the SpiNNaker network since packets travelling over a link can
 		be `snooped' via the USB link without impacting the system's performance.
-		Additionally, it would allow software models of high-bandwidth I/O devices
+		Additionally, it will allow software models of high-bandwidth I/O devices
 		and host communications to be implemented.
 	
 	
@@ -270,15 +387,15 @@
 			
 			% During PLL locking, could still have good performance
 			
-			During clock recovery, the clock signal it produces is of low quality but
-			gradually approaches the ideal signal. It is hypothesised is that during
-			this acquisition period, data may still be sent, but at low speeds.  This
-			could be achieved, for example, by duplicating every bit sent across the
-			link (oversampling) and thus reducing sensitivity to the poor quality
-			clock signal.  Further error detection information may also be included
-			during this time to handle the increased error rate. This technique could
-			reduce the latency caused by link speed changes by allowing useful data to
-			pass across links earlier.
+			During clock recovery, the recovered clock signal is initially of low
+			quality and gradually approaches the original clock signal. It is
+			hypothesised is that during this acquisition period, data may still be
+			sent, but at low speeds. This could be achieved, for example, by
+			duplicating every bit sent across the link (oversampling) and thus
+			reducing sensitivity to the poor quality clock signal.  Further error
+			detection information may also be included during this time to handle the
+			increased error rate. This technique could reduce the latency caused by
+			link speed changes by allowing useful data to pass across links earlier.
 			
 			A large part of this work will consist of characterising the quality of
 			the link during clock recovery and thus determining the degree of
@@ -303,10 +420,10 @@
 			possibilities.  At the chip-to-chip level, SpiNNaker exploits this in its
 			`emergency routing' scheme where packets are automatically re-routed
 			around faulty links as shown in figure \ref{fig:emergency-routing}. These
-			emergency routes feature only a single hop of overhead and additionally
-			require only very simple, fixed routing rules. Since the HSS
-			board-to-board links within SpiNNaker are also arranged in a (coarser)
-			hexagonal torus, the same principle can in be used here.
+			emergency routes feature only a single hop of overhead and require only
+			simple, fixed routing rules. Since the HSS board-to-board links within
+			SpiNNaker are also arranged in a (coarser) hexagonal torus, the same
+			principle can be used here.
 			
 			\begin{figure}
 				\center
@@ -327,7 +444,7 @@
 			neighbouring link.  Though this alternative route appears much longer,
 			only two HSS links are crossed (an overhead of one HSS hop). Since each
 			FPGA implements two HSS board-to-board links, frames destined for an
-			unavailable link can be cheaply forwarded within the FPGA to the other
+			unavailable link can be forwarded cheaply within the FPGA to the other
 			link for transmission. The intermediate FPGA then blindly forwards the
 			frame over its other HSS link where the frame finally arrives at the
 			intended FPGA. The arriving frame is then processed as if it had arrived
@@ -335,8 +452,8 @@
 			
 			As with emergency routing, the redirection technique only works when at
 			most one of the HSS links within a set of three is unavailable. As a
-			result, link speed changes must be carefully scheduled in order to ensure
-			that only one link within the set changes speed at a given moment.
+			result, link speed changes must be carefully scheduled to ensure that only
+			one link within the set changes speed at a given moment.
 		
 		\subsection{`Santos-28' test chip}
 			
@@ -352,8 +469,9 @@
 			links both internally and between chips. The proposed HSS links have been
 			developed by the researchers in Dresden and therefore are potentially open
 			to development. Due to the currently unpredictable state of this project,
-			this work does not appear in the Gantt chart. Should the work take place,
-			it will initially replace the other work planned in this section.
+			this work does not appear in the Gantt chart. Depending on the scope of
+			this work, it may initially replace the other work planned in this
+			section.
 	
 	\section{Thesis writing}
 		
