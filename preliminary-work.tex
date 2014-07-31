@@ -3,23 +3,23 @@
 	
 	% TODO: Add more linking together perhaps?
 	
-	The preliminary work outlined in this chapter initially concentrates on
-	developing a fuller understanding of the characteristics of the
-	interconnection networks used in SpiNNaker. This work has developed into the
-	foundations for new extensions to the SpiNNaker network which will form the
-	main contributions of this project.
+	The work outlined in this chapter initially concentrates on developing a
+	fuller understanding of the characteristics of the interconnection networks
+	used in SpiNNaker. This work has developed into the foundations for new
+	extensions to the SpiNNaker network which will form the main contributions of
+	this project.
 	
 	The chapter begins with the development of an efficient wiring scheme for
 	large SpiNNaker systems which accounts for the properties of HSS interconnect
 	technology. This is followed by a discussion of an extension to the network
-	which exploits this wiring scheme to inexpensively transform the network into
-	a small-world network with improved latency.  As part of an effort to validate
-	potential changes to the network, a model of SpiNNaker's interconnection
-	network has been built. A brief description of this work is included along
-	with details of collaborative work to develop new modelling techniques.  The
-	chapter concludes with an overview of extensions being made to the existing
-	HSS board-to-board links within SpiNNaker which will form the foundations of
-	an implementation of small-world networking.
+	which exploits this wiring scheme to transform the network into a small-world
+	network with improved latency using a small number of additional cables.  As
+	part of an effort to validate these changes, a model of SpiNNaker's
+	interconnection network has been built. A brief description of this work is
+	included along with details of collaborative work to develop new modelling
+	techniques.  The chapter concludes with an overview of extensions being made
+	to the existing HSS board-to-board links within SpiNNaker which will form the
+	foundations of an implementation of small-world networking.
 	
 	\section{SpiNNaker machine wiring}
 		
@@ -28,7 +28,7 @@
 		
 		Electrical HSS links impose restrictions on the maximum length of cables. In
 		the case of SpiNNaker's board-to-board links, which follow the S-ATA
-		physical connection standard, cable lengths are limited to one meter for
+		physical connection standard, cable lengths are limited to one metre for
 		most applications \cite{sata3spec}. Due to SpiNNaker's torus topology, this
 		restriction necessitates a non-trivial wiring scheme as described in this
 		section.
@@ -48,11 +48,11 @@
 		in a small SpiNNaker system containing 48 boards (represented as hexagons).
 		Touching edges represent a connection between two boards. Lines show the
 		connectivity between boards on opposite sides of the system. While the
-		majority of wires are very short (i.e. connect two boards which are
+		majority of wires are very short (i.e. connecting two boards which are
 		side-by-side), some wires must cross the entire system's length. If
 		SpiNNaker boards are arranged na\"ively to match their logical layout, for
 		the largest planned SpiNNaker machine, spanning ten server-room cabinets,
-		wires over six meters long would be needed, far beyond the one metre
+		wires over six metres long would be needed, far beyond the one metre
 		technology limit.
 		
 		The principles of the machine's construction described by by Davidson
@@ -61,7 +61,7 @@
 		arrangements of SpiNNaker boards \footnote{The SpiNNer tool was also used to
 		generate many of the figures in this section.}. The development and use of
 		this tool has led to the design of practical wiring schemes for SpiNNaker
-		systems ranging in size from three boards to a ten cabinets (1,200 boards).
+		systems ranging in size from three boards to ten cabinets (1,200 boards).
 		This section describes the principle by which these schemes are produced.
 		
 		\subsection{Reducing wiring length}
@@ -165,14 +165,14 @@
 				\label{fig:spinnaker106}
 			\end{figure}
 			
-			The final step in the process is to map the boards into their real-world
-			physical positions. The largest SpiNNaker system will be installed into a
-			series of cabinets, each containing a number of racks into which the
-			boards are slotted and wired together. Figure \ref{fig:spinnaker106} shows
-			the proposed rack placement scheme for the largest planned SpiNNaker
-			system of 1,200 boards. Even though the system is physically around six
-			metres long, the longest wire will be less than one metre in length and
-			thus within the S-ATA specification.
+			The final step is to map the boards into their real-world physical
+			positions. The largest SpiNNaker system will be installed into a series of
+			cabinets, each containing a number of racks into which the boards are
+			slotted and wired together. Figure \ref{fig:spinnaker106} shows the
+			proposed rack placement scheme for the largest planned SpiNNaker system of
+			1,200 boards. Even though the system is physically around six metres long,
+			the longest wire will be less than one metre in length and thus within the
+			S-ATA specification.
 		
 		\subsection{Future Work}
 			
@@ -201,10 +201,10 @@
 			
 			Wiring plans produced by SpiNNer have already successfully been used in
 			the construction of small `desk-side' 24-board SpiNNaker systems
-			containing 20,736 cores (figure \ref{fig:rack}. The tool is also being
+			containing 20,736 cores (figure \ref{fig:rack}). The tool is also being
 			used in the ongoing construction of larger SpiNNaker machines. Due to the
-			larger size of these machines, the tool must be extended to break down
-			wiring diagrams into multiple diagrams to aid usability.
+			larger size of these machines, the tool must be extended to break down the
+			wiring plans into multiple diagrams to aid usability.
 	
 	
 	\section{Small-world networks}
@@ -377,13 +377,13 @@
 				\label{fig:ringNetworkLimitedWires}
 			\end{figure}
 			
-			The effect of this non-uniformity is yet to be studied. In addition, the
-			magnitude of the differences in average path length in different parts of
-			a network is reduced both in higher dimensional topologies and also after
-			the network has been folded and mapped into physical racks and cabinets.
-			Future work intends to implement a small-world style network both within
-			the simulator described in the next section and, subsequently, within
-			SpiNNaker's board-to-board links.
+			The effect of this non-uniformity is yet to be studied. In particular, the
+			magnitude of the differences between average path lengths in different
+			parts of a network is reduced both in higher dimensional topologies and
+			also after the network has been folded and mapped into physical racks and
+			cabinets. Future work intends to implement a small-world style network
+			both within the simulator described in the next section and, subsequently,
+			within SpiNNaker's board-to-board links.
 	
 	
 	\section{SpiNNaker network modelling}
@@ -395,7 +395,7 @@
 		% SpiNNaker's interconnect. This work indirectly offers interesting insights
 		% into behaviour due to the board-to-board links.
 		
-		A recent collaboration with other researchers within the department has
+		A recent collaboration with other researchers within the school has
 		investigated novel methods for high-level simulation and modelling of large
 		scale systems. This work used SpiNNaker's interconnection network as its
 		case study and included the development of a number of different simulators
@@ -406,8 +406,8 @@
 		are no-longer faced with a decision of whether time allows for a hardware
 		model but rather whether advantages of FPGA-based models, such as
 		substantial simulation speed improvements, are desired over software based
-		approaches.  The work is in its final draft and targeted for journal
-		submission early in August this year.
+		approaches.  The work is in its final draft and planned for journal
+		submission in August this year.
 		
 		The author's primary contribution to this work has centred around the
 		development of a detailed software model of SpiNNaker's interconnection
@@ -429,7 +429,7 @@
 					\tikzexternaldisable
 					\input{figures/tickysim-model}
 					\caption{Model of a SpiNNaker chip. A packet generator and consumer
-					model SpiNNaker's eighteen cores. A tree of packet arbiters mimmicing
+					model SpiNNaker's eighteen cores. A tree of packet arbiters mimicking
 					SpiNNaker's Network on Chip (NoC) feeds a stream of packets into a
 					router model.}
 					\label{fig:tickysim-model-chip}
@@ -452,18 +452,17 @@
 			The basic unit of the Tickysim simulator model is a high-level model of a
 			single SpiNNaker chip which is summarised in figure
 			\ref{fig:tickysim-model-chip}. Since the model focuses on the
-			interconnection network, the eighteen processors present on a SpiNNaker
-			chip are instead modelled by a simple packet generator and consumer. This
-			simplification saves a large amount of simulation overhead at the expense
-			of detail in processor behaviour. Since the exact computation performed is
-			not the focus of the model, this simplification should significantly
-			impact results.
+			interconnection network, the eighteen processors on a SpiNNaker chip are
+			modelled by a simple packet generator and consumer. This simplification
+			saves much simulation overhead at the expense of detail in processor
+			behaviour. Since the exact computation performed is not the focus of the
+			model, this simplification should significantly impact results.
 			
 			The model captures the basic structure of the Network-on-Chip (NoC) within
 			SpiNNaker chips. In particular, streams of packets incident on the chip
-			are merged using a tree of mergers before entering a model of the on-chip
-			router. The simulated router models a multiple stage pipeline matching
-			that of the actual SpiNNaker router along with packet dropping and other
+			are merged two-at-a-time in a tree structure before entering a model of
+			the on-chip router. The simulated router models a multiple stage pipeline
+			matching that of the SpiNNaker router along with packet dropping and other
 			behaviours.
 			
 			The complete model consists of a network of these chip models
@@ -483,9 +482,9 @@
 			slow-down experienced by comparable software simulators such as INSEE
 			\cite{navaridas11insee}. Though the model itself is single threaded,
 			parameter-sweep style experiments may be performed in parallel using
-			commodity compute resources. Experiments conducted using idle department
-			workstations allowed hundreds of parameter settings to be tested in the
-			time required to run a single experiment on a single machine.
+			commodity compute resources. Experiments conducted using idle workstations
+			allowed hundreds of parameter settings to be tested in the time required
+			to run a single experiment on a single machine.
 		
 		\subsection{Results}
 			
@@ -552,7 +551,7 @@
 			to these links is not modelled by Tickysim, their results clearly differ.
 			Figure \ref{fig:results-144-accuracy-complement} demonstrates this effect
 			in the form of two distinct phases of saturation in SpiNNaker but just one
-			in Tickysim. In complement traffic, several distinct clusters of
+			in Tickysim. With complement traffic, several distinct clusters of
 			communicating nodes occur in the network. In SpiNNaker, those clusters
 			which span board boundaries saturate first due to their lower bandwidth
 			followed later by the native chip-to-chip links. This behaviour can be
@@ -566,12 +565,12 @@
 			% accurately modelling these have been unsuccessful. Will be used to guide
 			% work on these links.
 			
-			Work is planned to more accurately model the behaviour of board-to-board
-			links within Tickysim to allow its use in evaluating the utility of small
-			world connectivity. Preliminary attempts to model board-to-board links as
-			simply having longer latencies have been unsuccessful. It is suspected
-			that the mechanisms used within the HSS links must also be modelled to
-			match SpiNNaker's behaviour.
+			Work is planned to model the behaviour of SpiNNaker's board-to-board links
+			within Tickysim to allow its use in evaluating the utility of small world
+			connectivity. Preliminary attempts to model board-to-board links as
+			otherwise normal links but with longer latencies have been unsuccessful.
+			It is suspected that the mechanisms used within the HSS links must also be
+			modelled to match SpiNNaker's behaviour.
 	
 	
 	\section{SpiNNaker FPGA connectivity}
@@ -614,17 +613,18 @@
 				\end{figure}
 				
 				The existing board-to-board links are implemented within the FPGAs on
-				each SpiNNaker board. Each HSS link is designed to transparently replace
-				eight chip-to-chip SpiNNaker links. The design, as shown in figure
-				\ref{fig:existing-fpga-links} contains three basic elements. A 2-of-7
-				block translates between the asynchronous 2-of-7 protocol used by
-				SpiNNaker chip links and a synchronous protocol used within the FPGA
-				design. The next block assembles and disassembles `frames' containing
-				SpiNNaker packets and ensures reliable communication by verifying
-				incoming frames and retransmitting frames if required. The final block
-				is provided as `hard IP' by the FPGA manufacturer rather than soft
-				programmable FPGA logic to enable it to run at the high speeds required
-				serialisation and deserialisation of frames for the HSS link.
+				each SpiNNaker board (described previously in
+				\S\ref{sec:spinnaker-fpgas} and figure \ref{fig:board-to-board-links}).
+				Each HSS link is designed to carry eight chip-to-chip SpiNNaker links.
+				The design, as shown in figure \ref{fig:existing-fpga-links} contains
+				three basic elements. A `2-of-7' block translates between the
+				asynchronous 2-of-7 protocol used by SpiNNaker chip links and the
+				synchronous protocol used within the FPGA design. The next block
+				assembles and disassembles `frames' containing SpiNNaker packets and
+				ensures reliable communication by verifying incoming frames and
+				retransmitting frames if required. The final block is provided as `hard
+				IP' by the FPGA manufacturer rather than soft programmable FPGA logic
+				enabling it to run at the high speeds used by HSS links.
 				
 				\begin{figure}
 					\center
@@ -636,16 +636,6 @@
 					\label{fig:rdyvld-protocol}
 				\end{figure}
 				
-				Within and between blocks, data is transferred using a simple
-				point-to-point `ready/valid' protocol illustrated in figure
-				\ref{fig:rdyvld-protocol}.  The receiever asserts a `ready' signal
-				whenever it is able to accept new data. The sender places data it wishes
-				to send on a data bus while asserting a `valid' signal. If the valid and
-				ready signals are simultaneously asserted on the rising edge of the
-				clock, the data is considered received. This protocol allows a value to
-				be transmitted up-to every clock cycle while still allowing both the
-				sender and receiver control over the rate that data flows.
-			
 			\subsection{Proof-of-concept I/O device}
 				
 				% Describe principle of how a router will be integrated and streams
@@ -663,7 +653,7 @@
 					
 					\caption[Proof-of-concept low-speed I/O system.]{Proof-of-concept
 					low-speed I/O system. A spare HSS link from an FPGA on a SpiNNaker
-					board connects to a Raggedstone 2 board connected to a host PC.}
+					board connects to an FPGA board connected to a host PC.}
 					\label{fig:proof-of-concept-fpga-links}
 				\end{figure}
 				
@@ -673,9 +663,9 @@
 				was developed to allow injection and extraction of packets directly into
 				the network. In this system, which is sketched in figure
 				\ref{fig:proof-of-concept-fpga-links}, a SpiNNaker board is connected to
-				an off-the-shelf Raggedstone 2 FPGA development baord
+				an off-the-shelf FPGA development board
 				\cite{raggedstone2} using an unused S-ATA connector on the SpiNNaker
-				board. A host PC then connects to the Raggedstone 2 via an onboard FTDI
+				board. A host PC then connects to the FPGA board via an onboard FTDI
 				USB-to-UART (Universal Asynchronous Receiver/Transmitter) converter
 				providing a simple to drive but low speed (2.3 Mbit/s) compared to the
 				HSS link (1.5 Gbits/s) connection over which SpiNNaker packets can be
@@ -683,26 +673,25 @@
 				
 				A router is used on the SpiNNaker boards' FPGAs to route packets from
 				incoming SpiNNaker chips either along their usual board-to-board
-				connection, to the Raggedstone 2 board or both.  Packets are routed
-				using the same key and mask mechanism described in
-				\S\ref{sec:spinn-router} though in the current, preliminary design the
-				routing table contains only a single entry.  Packets routed to the
-				Raggedstone 2 board the same HSS link protocol as board-to-board links
-				to travel to and from the Raggedstone 2 board.  On the Raggedstone 2,
-				one of the eight streams of packets is fed to a UART block which uses a
-				simple protocol to send and receive SpiNNaker packets at low speed to a
-				host PC. The UART connection to the host is the bottleneck in the system
-				and more performant technologies such as USB 3.0 would instantly enable
-				greater performance. With this bottleneck removed the only overhead is
-				an additional 13 ns of latency added by the router and throughput would
-				be unaffected.
+				connection, to the FPGA board or both.  Packets are routed using the
+				same key and mask mechanism described in \S\ref{sec:spinn-router} though
+				in the current, preliminary design the routing table contains only a
+				single entry.  Packets routed to the FPGA board the same HSS link
+				protocol as board-to-board links to travel to and from the FPGA board.
+				On the FPGA, one of the eight streams of packets is fed to a UART block
+				which uses a simple protocol to send and receive SpiNNaker packets at
+				low speed to a host PC. The UART connection to the host is the
+				bottleneck in the system and more performant technologies such as USB
+				3.0 would instantly enable greater performance. With this bottleneck
+				removed the only overhead is an additional 13 ns of latency added by the
+				router and throughput would be unaffected.
 				
 				This proof-of-concept device has been successfully integrated into the
 				SpiNNaker implementation of Nengo where it can be used to transmit
 				values in to and out of a model in realtime. Despite its low bandwidth,
-				the link carries raw SpiNNaker packets performs favourably compared to
-				the previous Ethernet implementation whose large protocol overheads
-				resulted in very low bandwidth.
+				the link only transmits raw SpiNNaker packets and thus performs
+				favourably compared to the previous Ethernet implementation whose
+				protocol overheads resulted in low bandwidth.
 			
 			\subsection{Further work}
 				
@@ -713,16 +702,16 @@
 				schemes and using additional HSS links within SpiNNaker's FPGAs in
 				place, it is now possible to develop high speed peripheral and host
 				connectivity. In addition, this infrastructure allows for the addition
-				of axillary links between boards which could be used for the
+				of auxiliary links between boards which could be used for the
 				implementation of small-world network connectivity.
 				
 				In collaboration with researchers at the Technical University of Munich,
 				a small board containing an FPGA with both a HSS link and a USB 3.0 link
 				is being developed. This board's FPGA could be loaded with a design very
-				similar to that used in the Raggedstone 2 but with the UART block
-				replaced with a USB 3.0 block. Using this board, it is hoped that high
-				bandwidth communication between a host and SpiNNaker machine should
-				become possible. As well as improving system performance this will also
-				enable greater visibility of SpiNNaker's network behaviour which may
-				prove valuable in later work.
+				similar to that used in the existing FPGA board but with the UART block
+				replaced with a USB 3.0 block. Using this board, high bandwidth
+				communication between a host and SpiNNaker machine should become
+				possible. As well as improving system performance this will also enable
+				greater visibility of SpiNNaker's network behaviour which may prove
+				valuable in later work.
 

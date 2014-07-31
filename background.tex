@@ -925,10 +925,34 @@
 			operate more than eight times faster than the 2-of-7 links and so no
 			throughput penalty is incurred.
 			
+			\begin{figure}
+				\center
+				\input{figures/board-to-board-links}
+				
+				\caption[Connectivity of FPGAs in SpiNNaker boards.]{Connectivity of
+				FPGAs in SpiNNaker boards. Hexagons represent individual chips, touching
+				edges are connected. Each FPGA features four HSS links with three being
+				broken out to S-ATA sockets: two are intended for board-to-board
+				connections and one for peripheral connectivity. The remaining HSS link
+				is connected via traces on the board as a ring network between FPGAs.}
+				\label{fig:board-to-board-links}
+			\end{figure}
+			
+			\label{sec:spinnaker-fpgas}
+			
 			The HSS links are implemented within the three FPGAs present on each 48
-			chip SpiNNaker board. Each FPGA independently handles two of the HSS
-			board-to-board links. These FPGAs also feature additional connectivity
-			which may be exploited as part of the work proposed in this report.
+			chip SpiNNaker board where each FPGA independently handles two
+			board-to-board links (figure \ref{fig:board-to-board-links}). Connections
+			between boards use commodity S-ATA cables, a factor which introduces a
+			number of restrictions -- explored in preliminary work -- on how SpiNNaker
+			systems are assembled. The FPGAs also feature two currently unused HSS
+			links. One of these is exposed via a S-ATA connector and is used in later
+			preliminary work to connect external devices to SpiNNaker and planned work
+			will also use this to add extra board-to-board links to improve bandwidth
+			within the SpiNNaker network. The second unused link is connected within
+			the board as a unidirectional ring network. Future work is planned to
+			exploit this additional link to add short-cuts in the network for packets
+			which would otherwise pass through the board.
 	
 	\section{High-Speed Serial (HSS)}
 		\label{sec:high-speed-serial}
